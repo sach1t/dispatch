@@ -30,7 +30,7 @@ class PluginManager:
 		words = module_name.split("_")
 		for word_index in range(len(words)):
 			words[word_index] = words[word_index].title()
-		words.append("Plugin")
+		words.append("Operator")
 		classname = "".join(words)
 
 		return classname

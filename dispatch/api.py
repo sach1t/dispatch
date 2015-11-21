@@ -14,23 +14,18 @@ class Action:
 
 
 class ActionOperator:
-    def __init__(self, name, description):
-        self.name = name
-        self.description = description
+    name = "ActionOperator"
+    description = "Some thing"
 
-    def operates_on(obj):
+    def operates_on(self, action):
         '''Return (X,Y)
         X = operates on object?
-        Y = operates live on object?
-        '''
-        if isinstance(obj, Action):
-            return (True, False)
+        Y = operates live on object? '''
+        if isinstance(action, Action):
+            return (False, False)
 
-    def get_actions_for(obj, query=""):
-    '''
-    Return list of actions.
-    if live = True current query will be given.
-    operates_on(obj) guarenteed to be true.
-    '''
-    return []
-
+    def get_actions_for(self, action, query_action=None):
+        '''Return list of actions.
+        if live = True current query will be given.
+        operates_on(obj) guarenteed to be true.'''
+        return []
