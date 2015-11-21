@@ -1,0 +1,27 @@
+ #MainWindow {
+    background-color: white;
+}
+
+GtkListBox {
+    background-color: white;
+}
+
+GtkListBoxRow {
+    color: black;
+    font-family: OpenSans;
+    font-weight: 500;
+}
+
+GtkListBoxRow:selected {
+    background-color: black;
+    color: white;
+}
+
+#SearchEntry {
+    background-color: white;
+    color: #333;
+    font-size:16px;
+    font-family: OpenSans;
+    font-weight: 400;
+    padding: 10px;
+}
