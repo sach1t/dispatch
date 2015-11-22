@@ -15,7 +15,7 @@ class TimedAction(Action):
         Action.__init__(self, name, description, run, data, icon)
 
 
-class AppTimeOperator(ActionOperator):
+class RootOperator(ActionOperator):
     def __init__(self):
         ActionOperator.__init__(self)
         self.actions = []
@@ -45,7 +45,7 @@ class AppTimeOperator(ActionOperator):
 
 
 
-class AppTimeOperatorGOOD(ActionOperator):
+class AppTimeOperator(ActionOperator):
     def __init__(self):
         ActionOperator.__init__(self)
 
@@ -81,6 +81,10 @@ class AppsOperator(ActionOperator):
         ActionOperator.__init__(self)
         self.paths = ["/usr/share/applications", "~/.local/share/applications"]
         self.file_type = "*.desktop"
+        self.actions = []
+        for p in self.paths:
+            self.actions.extend(self._generate_app_actions(p))
+
 
     def operates_on(self, action):
         if action is None:
@@ -90,10 +94,8 @@ class AppsOperator(ActionOperator):
     def get_actions_for(self, action, query=""):
         #if isinstance(action, QueryAction) ... 
         # not necessary since operates_on only 1 object
-        actions = []
-        for p in self.paths:
-            actions.extend(self._generate_app_actions(p))
-        return actions
+        #return [x for x in self.actions if x.name.lower().startswith(query)]
+        return self.actions
 
     def _generate_app_actions(self, path):
         app_actions = []
