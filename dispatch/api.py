@@ -23,9 +23,13 @@ class ActionOperator:
         Y = operates live on object? '''
         if isinstance(action, Action):
             return (False, False)
+        return (False, False)
 
-    def get_actions_for(self, action, query_action=None):
+
+    def get_actions_for(self, action, query = ""):
         '''Return list of actions.
         if live = True current query will be given.
-        operates_on(obj) guarenteed to be true.'''
+        operates_on(obj) guarenteed to be true.
+        If you are live, it is your responsibility to make sure 
+        that the actions returned match the query'''
         return []

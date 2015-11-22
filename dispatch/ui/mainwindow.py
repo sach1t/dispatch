@@ -103,22 +103,31 @@ class MainWindow(Gtk.Window):
         return next_row_index
 
 
+    # def _on_search_key_release(self, widget, event):
+    #     if event.keyval == Gdk.KEY_BackSpace:
+    #         total_contexts = self.entry.get_text().count("/")
+    #         self.chain = self.chain[:total_contexts]
+
+
     def _on_delete(self, widget, start, end):
-        print("text = ", self.entry.get_text())
-        print("del = ", self.entry.get_text()[start:end])
-        print("=", self.entry.get_text())
+        #print("text = ", self.entry.get_text())
+        #print("del = ", )
+        #print("=", self.entry.get_text())
         if self.non_delete_update:
             self.non_delete_update = False
         else:
-            deleted_contexts = self.entry.get_text()[start:end].count('/')
-            for x in range(deleted_contexts):
-                self.chain.pop()
-        print("chain (del) = ", self.chain)
+            #deleted_contexts = self.entry.get_text()[start:end].count('/')
+            #for x in range(deleted_contexts):
+            #    self.chain.pop()
+            total_contexts = self.entry.get_text().count("/")
+            del_contexts = self.entry.get_text()[start:end].count("/")
+            self.chain = self.chain[:total_contexts-del_contexts]
+        #print("chain (del) = ", self.chain)
 
 
     def _on_search_key(self, widget, event):
         if event.keyval == Gdk.KEY_slash:    
-            self.non_character_keypress = False       
+            self.non_character_keypress = False     
             current_row = self.listbox.get_selected_row()
             if current_row:
                 new_text = current_row.action.name
@@ -128,7 +137,8 @@ class MainWindow(Gtk.Window):
                 self.entry.set_text(new_text)
                 self.chain.append(current_row.action)
             else:
-                self.chain.append(None)
+                #self.chain.append(None)
+                pass
             self.entry.set_position(len(self.entry.get_text()))
             print("chain (sla) = ", self.chain)
 
@@ -197,13 +207,10 @@ class MainWindow(Gtk.Window):
             matches = self.searcher.search(text, self.chain)
             self._show_matches(matches)
 
-
     def _on_search_submit(self, widget):
         row = self.listbox.get_selected_row()
         if row:
             self._run_action(self.listbox, row)
-
-
 
     def _on_quit(self,  *args):
         self.keybinder.stop()
@@ -244,10 +251,9 @@ class MainWindow(Gtk.Window):
         row.action = action
         return row
 
-
     def _run_action(self, listbox, listrow):
         if hasattr(listrow, "action"):
-            listrow.action.exec_callback(listrow.action)
+            listrow.action.run(listrow.action)
             # we dont execute through another function bc we want it to be as fast as possible
             # even though another function call is cheap, pennies count
             self.searcher.heuristic_data(self.entry.get_text(), listrow.action)

@@ -1,1 +1,1 @@
-from .apps_plugin import AppsOperator
+from .apps_plugin import AppTimeOperator, AppsOperator

@@ -10,6 +10,72 @@ class AppAction(Action):
         Action.__init__(self, name, description, run, data, icon)
 
 
+class TimedAction(Action):
+    def __init__(self, name, description, run, data=None, icon=None):
+        Action.__init__(self, name, description, run, data, icon)
+
+
+class AppTimeOperator(ActionOperator):
+    def __init__(self):
+        ActionOperator.__init__(self)
+        self.actions = []
+        for x in os.listdir("/"):
+            act = TimedAction(
+                "|" + x,
+                "",
+                run = self.timed_run,
+                data = {"cmd" : "xdg-open /" +x}
+                )
+            self.actions.append(act)
+
+    def operates_on(self, action):
+        if action is None:
+            return (True, True)
+        return (False, False)
+
+    def get_actions_for(self, action, query=""):
+        # it is your responsibility to make sure that the actions
+        # returned match the query
+        matches = [x for x in self.actions if x.name.startswith(query)]
+        return matches
+
+    def timed_run(self, action):
+        cmd = action.data["cmd"]
+        subprocess.Popen(cmd, shell=True)
+
+
+
+class AppTimeOperatorGOOD(ActionOperator):
+    def __init__(self):
+        ActionOperator.__init__(self)
+
+    def operates_on(self, action):
+        if isinstance(action, AppAction):
+            return (True, False)
+        return (False, False)
+
+    def get_actions_for(self, action, query=""):
+        actions = []
+        name = action.name
+        cmd = action.data["desktop_entry"].getExec()
+        if "%" in cmd:
+            cmd = cmd[:cmd.index("%")]
+
+        for x in range(0, 60, 5):
+            act = TimedAction(
+                "in " + str(x) + " sec",
+                "",
+                run = self.timed_run,
+                data = {"cmd" : "sleep " + str(x) + " && " + cmd}
+                )
+            actions.append(act)
+        return actions
+
+    def timed_run(self, action):
+        cmd = action.data["cmd"]
+        subprocess.Popen(cmd, shell=True)
+        
+
 class AppsOperator(ActionOperator):
     def __init__(self):
         ActionOperator.__init__(self)
@@ -17,10 +83,11 @@ class AppsOperator(ActionOperator):
         self.file_type = "*.desktop"
 
     def operates_on(self, action):
-        if isinstance(action, QueryAction):
+        if action is None:
             return (True, False)
+        return (False, False)
 
-    def get_actions_for(self, action, query_action=None):
+    def get_actions_for(self, action, query=""):
         #if isinstance(action, QueryAction) ... 
         # not necessary since operates_on only 1 object
         actions = []

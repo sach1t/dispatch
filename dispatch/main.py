@@ -8,8 +8,6 @@ def read_css(filename):
         data = f.read()
     return data
 
-UPDATE_SOURCES_INTERVAL = 1000*20
-
 
 def main():
     plugin_manager = PluginManager()
@@ -17,8 +15,6 @@ def main():
     plugins = plugin_manager.get_plugins()
 
     searcher = Searcher(plugins)
-    GObject.timeout_add(UPDATE_SOURCES_INTERVAL, searcher.update_sources)
-
 
     style = read_css("./dispatch/ui/style.css")
     win = MainWindow(searcher, style)

@@ -2,13 +2,12 @@ from dispatch.trie import Trie
 
 
 class Searcher:
-    def __init__(self, sources):
-        self.sources = sources
+    def __init__(self, operators):
         self.past_data = {}
-        self.source_data = self.get_data(sources)
+        self.operators = operators
+        self.cache = {}
 
-    def search(self, query, chain):
-        return self.experminental_search(query, chain)
+    def basic_search(self, query, chain):
         if query.strip() == "":
             return []
         matches = []
@@ -18,55 +17,60 @@ class Searcher:
         return matches
 
 
+    def search_plugins(self, action, query):
+        print("acts = ", action)
+        print("query = ", query)
 
-        # What happens when backspaces we must go out of context
+        actions_live = []
+        actions_static = []
+        if action in self.cache:
+            print("chache hit")
+            actions_static = self.cache[action]
+            for op in self.operators:
+                op_operates,op_live = op.operates_on(action)
+                if op_operates and op_live:
+                    print("queried lve")
+                    actions_live.extend(op.get_actions_for(action, query))
+        else:
+            print("cacche miss")
+            for op in self.operators:
+                op_operates,op_live = op.operates_on(action)
+                if op_operates and op_live:
+                    actions_live.extend(op.get_actions_for(action, query))
+                elif op_operates and not op_live:
+                    actions_static.extend(op.get_actions_for(action, query))
+            self.cache[action] = actions_static
+
+        print("static = ", actions_static)
+        print("live = ", actions_live)
+        print("\n\n\n\n\n")
+
+        return actions_static, actions_live
 
 
-    def experminental_search(self, query, chain):
-        # chain = action chain = choices that led to this point
+    def search(self, query, chain):
+        # chain =  operator chain
+        #print("-----")
+        #print("chain = ", chain)
         if query == "":
             return []
-
-        if chain == []:
-            search_context = self.source_data
-        else:
-            search_context =  {}
-            if chain[-1] is None or chain[-1].option_callback is None:
-                possible_actions = []
-            else:
-                possible_actions = chain[-1].option_callback(chain[-1])
-            search_context[chain[-1]] = self._create_trie(possible_actions)
-
-        # finds matches of each word in  query, and takes intersection of
-        # those matches to find matches with all word parts
 
         query = query.strip().lower()
         if "/" in query:
             query = query[query.index("/")+1:]
+            
+        last_action = chain[-1] if len(chain) > 0 else None
+        actions, live_actions = self.search_plugins(last_action, query)
 
-        if query == "":
-            matches = set()
-            for search_tree in search_context.values():
-                for match in search_tree.find_matches(query):
-                    matches.add(match)
-            matches = list(matches)
-            return matches
-        else:
-            search_words = query.split()
-            match_sets = []
-            for word in search_words:
-                matches = set()
-                for search_tree in search_context.values():
-                    matches = matches.union(set(search_tree.find_matches(word)))
-                match_sets.append(matches)
+        search_tree = self._create_trie(actions)
 
-            if match_sets:
-                intersection = list(set.intersection(*match_sets))
-            else:
-                intersection = []
-            self.rank(query, intersection)
-            return intersection 
-
+        # finds matches of each word in  query, and takes intersection of
+        # those matches to find matches with all word parts
+        matches = []
+        for match in search_tree.find_matches(query):
+            matches.append(match)
+        return matches + live_actions
+   
 
     def rank(self, query, matches):
         if query in self.past_data:
@@ -83,21 +87,6 @@ class Searcher:
         T = Trie()
         if actions:# individual words allow same lookup of object
             for e in actions:
-                words = e.name.split()
-                for index in range(len(words)):
-                    insert = " ".join(words[index:])
-                    T.insert(insert.lower(), e)
+                T.insert(e.name.lower(), e)
         return T
 
-    def get_data(self, sources):
-        source_data_map = {}
-        for src in self.sources:
-            source_data_map[src] = self._create_trie(src.get_actions())
-        return source_data_map
-
-    def update_sources(self):
-        for src in self.sources:
-            if src.has_updates():
-                self.source_data_map[src] = self._create_trie(src.get_actions())
-        return True 
-   
