@@ -163,7 +163,6 @@ class MainWindow(Gtk.Window):
                         new_text = entry_text[:entry_text.rindex('/')+1] + new_text
                     self.entry.set_text(new_text)
                     self.entry.grab_focus() #want sideeffect of selecting all text
-
         elif event.keyval == Gdk.KEY_Down and len(self.listbox.get_children()) > 0:
             self.non_character_keypress = True
             self.non_delete_update = True
@@ -177,7 +176,6 @@ class MainWindow(Gtk.Window):
                     new_text = entry_text[:entry_text.rindex('/')+1] + new_text
                 self.entry.set_text(new_text)
                 self.entry.grab_focus()
-
         elif event.keyval == Gdk.KEY_Up and len(self.listbox.get_children()) > 0:
             self.non_character_keypress = True
             self.non_delete_update = True
@@ -191,7 +189,6 @@ class MainWindow(Gtk.Window):
                     new_text = entry_text[:entry_text.rindex('/')+1] + new_text
                 self.entry.set_text(new_text)
                 self.entry.grab_focus()
-
 
     def _on_search_changed(self, widget):
         if self.non_character_keypress:
