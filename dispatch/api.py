@@ -33,3 +33,8 @@ class ActionOperator:
         If you are live, it is your responsibility to make sure 
         that the actions returned match the query'''
         return []
+
+
+class TextAction(Action):
+    def __init__(self, name, description, run, data=None, icon=None):
+        Action.__init__(self, name, description, run, data, icon)
