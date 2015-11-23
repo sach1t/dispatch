@@ -76,6 +76,37 @@ class AppTimeOperator(ActionOperator):
         subprocess.Popen(cmd, shell=True)
         
 
+
+class AppArgumentOperator(ActionOperator):
+    def __init__(self):
+        ActionOperator.__init__(self)
+
+    def operates_on(self, action):
+        if isinstance(action, AppAction):
+            return (True, True)
+        return (False, False)
+
+    def get_actions_for(self, action, query=""):
+        if "desktop_entry" in action.data:
+            cmd = action.data["desktop_entry"].getExec()
+            if "%" in cmd:
+                cmd = cmd[:cmd.index("%")]
+
+        act = AppAction(
+            name = "run with args: " + query,
+            description = "run with args",
+            run = self._launch_application,
+            data = {"cmd": cmd + " " + query}
+            )
+        return [act]
+
+    def _launch_application(self, action):
+        if "cmd" in action.data:
+            cmd = action.data["cmd"]
+            subprocess.Popen(cmd.split())
+
+
+
 class AppsOperator(ActionOperator):
     def __init__(self):
         ActionOperator.__init__(self)
