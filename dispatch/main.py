@@ -13,6 +13,7 @@ def main():
     plugin_manager = PluginManager()
     plugin_manager.load_plugins()
     plugins = plugin_manager.get_plugins()
+    print("Loaded Plugins : ", plugins)
 
     searcher = Searcher(plugins)
 
