@@ -136,12 +136,9 @@ class MainWindow(Gtk.Window):
                     new_text = entry_text[:entry_text.rindex('/')+1] + new_text
                 self.entry.set_text(new_text)
                 self.chain.append(current_row.action)
-            else:
-                #self.chain.append(None)
-                pass
-            self.entry.set_position(len(self.entry.get_text()))
-            print("chain (sla) = ", self.chain)
 
+            self.entry.set_position(len(self.entry.get_text()))
+            #print("chain (sla) = ", self.chain)
 
         elif event.keyval == Gdk.KEY_Tab and len(self.listbox.get_children()) > 0:
             self.non_character_keypress = True
@@ -180,7 +177,6 @@ class MainWindow(Gtk.Window):
                     new_text = entry_text[:entry_text.rindex('/')+1] + new_text
                 self.entry.set_text(new_text)
                 self.entry.grab_focus()
-
 
         elif event.keyval == Gdk.KEY_Up and len(self.listbox.get_children()) > 0:
             self.non_character_keypress = True
