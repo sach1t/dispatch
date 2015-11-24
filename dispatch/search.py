@@ -74,8 +74,9 @@ class Searcher:
         #print(matches)
         #print(query)
         #print("-------"*5)
-
-        return self.order_by_usage(matches) + live_actions
+        if len(matches) < 20:
+            matches = self.order_by_usage(matches)
+        return  matches + live_actions
    
 
     def order_by_usage(self, matches):
