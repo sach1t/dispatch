@@ -1,111 +1,54 @@
-from dispatch.api import Action, ActionOperator
+from dispatch.api import Action, ActionOperator, AppAction, AppWithArgsAction
 from xdg.DesktopEntry import DesktopEntry 
+from dispatch.plugins.cmds import CmdAction
 import subprocess
 import os
 import glob
 
 
-class AppAction(Action):
-    def __init__(self, name, description, run, data=None, icon=None):
-        Action.__init__(self, name, description, run, data, icon)
 
-
-class TimedAction(Action):
-    def __init__(self, name, description, run, data=None, icon=None):
-        Action.__init__(self, name, description, run, data, icon)
-
-
-class RootOperator(ActionOperator):
-    def __init__(self):
-        ActionOperator.__init__(self)
-        self.actions = []
-        for x in os.listdir("/"):
-            act = TimedAction(
-                "|" + x,
-                "",
-                run = self.timed_run,
-                data = {"cmd" : "xdg-open /" +x}
-                )
-            self.actions.append(act)
-
-    def operates_on(self, action):
-        if action is None:
-            return (True, True)
-        return (False, False)
-
-    def get_actions_for(self, action, query=""):
-        # it is your responsibility to make sure that the actions
-        # returned match the query
-        matches = [x for x in self.actions if x.name.startswith(query)]
-        return matches
-
-    def timed_run(self, action):
-        cmd = action.data["cmd"]
-        subprocess.Popen(cmd, shell=True)
-
-
-
-class AppTimeOperator(ActionOperator):
-    def __init__(self):
-        ActionOperator.__init__(self)
-
-    def operates_on(self, action):
-        if isinstance(action, AppAction):
-            return (True, False)
-        return (False, False)
-
-    def get_actions_for(self, action, query=""):
-        actions = []
-        name = action.name
-        cmd = action.data["desktop_entry"].getExec()
-        if "%" in cmd:
-            cmd = cmd[:cmd.index("%")]
-
-        for x in range(0, 60, 5):
-            act = TimedAction(
-                "in " + str(x) + " sec",
-                "",
-                run = self.timed_run,
-                data = {"cmd" : "sleep " + str(x) + " && " + cmd}
-                )
-            actions.append(act)
-        return actions
-
-    def timed_run(self, action):
-        cmd = action.data["cmd"]
-        subprocess.Popen(cmd, shell=True)
-        
-
+# TODO: when app wants arguments it should not use the live query we should pass off
+# arguments to it another way bc otherwise it will modify ... wiat. this one is weird
 
 class AppArgumentOperator(ActionOperator):
     def __init__(self):
         ActionOperator.__init__(self)
+        self.prompt = "args: "
 
     def operates_on(self, action):
-        if isinstance(action, AppAction):
+        if isinstance(action, AppAction) or isinstance(action, CmdAction):
             return (True, True)
         return (False, False)
 
     def get_actions_for(self, action, query=""):
-        if "desktop_entry" in action.data:
-            cmd = action.data["desktop_entry"].getExec()
-            if "%" in cmd:
-                cmd = cmd[:cmd.index("%")]
+        query = query.strip()
+        if query.startswith(self.prompt):
+            query = query.replace(self.prompt, "", 1)
 
-        act = AppAction(
-            name = "run with args: " + query,
+        act2 = AppWithArgsAction(
+            name = self.prompt + query,
             description = "run with args",
             run = self._launch_application,
-            data = {"cmd": cmd + " " + query}
-            )
-        return [act]
+            data = action.data.copy()
+        )
+        act2.data["args"] = query
+        if isinstance(action, CmdAction):
+            act2.data["type"] = "cmd"
+        else:
+            act2.data["type"] = "app"
+        return [act2]
 
     def _launch_application(self, action):
+        cmd = ""
+        if "type" in action.data and action.data["type"] == "cmd":
+            cmd += "gnome-terminal -e "
         if "cmd" in action.data:
-            cmd = action.data["cmd"]
-            subprocess.Popen(cmd.split())
-
-
+            cmd += action.data["cmd"]
+        cmd += " "
+        if "args" in action.data:
+            cmd += action.data["args"]
+        subprocess.Popen(cmd, shell=True)
+        
 
 class AppsOperator(ActionOperator):
     def __init__(self):
@@ -128,6 +71,12 @@ class AppsOperator(ActionOperator):
         #return [x for x in self.actions if x.name.lower().startswith(query)]
         return self.actions
 
+    def get_cmd(self, de):
+        cmd = de.getExec()
+        if "%" in cmd:
+            cmd = cmd[:cmd.index("%")]
+        return cmd
+
     def _generate_app_actions(self, path):
         app_actions = []
         for filename in glob.glob(os.path.expanduser(os.path.join(path, self.file_type))):
@@ -142,15 +91,11 @@ class AppsOperator(ActionOperator):
                     name = app.getName(),
                     description = "",
                     run = self._launch_application, 
-                    data = {"desktop_entry": app}, # could reduce later to save on memory replace with cmd
+                    data = {"desktop_entry": app, "cmd":self.get_cmd(app)}, # could reduce later to save on memory replace with cmd
                 )
                 app_actions.append(action)
         return app_actions
 
     def _launch_application(self, action):
-        if "desktop_entry" in action.data:
-            cmd = action.data["desktop_entry"].getExec()
-            if "%" in cmd:
-                cmd = cmd[:cmd.index("%")]
-            subprocess.Popen(cmd.split())
-            return []
+        if "cmd" in action.data:
+            subprocess.Popen(action.data["cmd"].split())

@@ -7,7 +7,7 @@ class Action:
         self.icon = icon
 
     def __str__(self):
-        return "{0} : {1}".format(self.name, self.description)
+        return "{0}".format(self.name)
 
     def __repr__(self):
         return "<" + self.name + ">"
@@ -34,6 +34,13 @@ class ActionOperator:
         that the actions returned match the query'''
         return []
 
+class AppAction(Action):
+    def __init__(self, name, description, run, data=None, icon=None):
+        Action.__init__(self, name, description, run, data, icon)
+
+class AppWithArgsAction(Action):
+    def __init__(self, name, description, run, data=None, icon=None):
+        Action.__init__(self, name, description, run, data, icon)
 
 class TextAction(Action):
     def __init__(self, name, description, run, data=None, icon=None):

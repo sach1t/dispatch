@@ -18,34 +18,35 @@ class Searcher:
 
 
     def search_plugins(self, action, query):
-        print("acts = ", action)
-        print("query = ", query)
+        #print("acts = ", action)
+        #print("query = ", query)
 
         actions_live = []
         actions_static = []
         if action in self.cache:
-            print("chache hit")
-            actions_static = self.cache[action]
+            #print("chache hit")
             for op in self.operators:
                 op_operates,op_live = op.operates_on(action)
                 if op_operates and op_live:
-                    print("queried lve")
+                    #print("queried lve")
                     actions_live.extend(op.get_actions_for(action, query))
+
         else:
-            print("cacche miss")
+            #print("cacche miss")
             for op in self.operators:
                 op_operates,op_live = op.operates_on(action)
                 if op_operates and op_live:
                     actions_live.extend(op.get_actions_for(action, query))
                 elif op_operates and not op_live:
                     actions_static.extend(op.get_actions_for(action, query))
-            self.cache[action] = actions_static
 
-        print("static = ", actions_static)
-        print("live = ", actions_live)
-        print("\n\n\n\n\n")
+            self.cache[action] = self._create_trie(actions_static)
 
-        return actions_static, actions_live
+
+        #print("static = ", actions_static)
+        #print("live = ", actions_live)
+
+        return [self.cache[action], actions_live]
 
 
     def search(self, query, chain):
@@ -56,19 +57,23 @@ class Searcher:
             return []
 
         query = query.strip().lower()
+        #print("qqq =", query)
         if "/" in query:
-            query = query[query.index("/")+1:]
+            query = query[query.rindex("/")+1:]
             
         last_action = chain[-1] if len(chain) > 0 else None
-        actions, live_actions = self.search_plugins(last_action, query)
+        actions_trie, live_actions = self.search_plugins(last_action, query)
 
-        search_tree = self._create_trie(actions)
+        search_tree = actions_trie
 
         # finds matches of each word in  query, and takes intersection of
         # those matches to find matches with all word parts
         matches = []
         for match in search_tree.find_matches(query):
             matches.append(match)
+        #print(matches)
+        #print(query)
+        #print("-------"*5)
         return matches + live_actions
    
 

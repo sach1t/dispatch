@@ -1,0 +1,7 @@
+- Clean up the code
+- the extension interface is a bit messy
+- the heuristic is broken with completion
+- passing arguments works but it is hack around the api involving live queries
+- the searching could be a bit better allow words in middle
+- the / also limits the arguments to operators eg. for paths
+- 

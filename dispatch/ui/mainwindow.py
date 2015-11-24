@@ -25,6 +25,10 @@ class MainWindow(Gtk.Window):
         self.set_default_geometry(
             self.get_screen().get_width()*.20,
             self.get_screen().get_height()
+        ) # not sure if needed 
+        self.resize(
+            self.get_screen().get_width()*.20,
+            self.get_screen().get_height()
         )
         self.move(0, 0)
         self.set_opacity(.95)
@@ -110,9 +114,9 @@ class MainWindow(Gtk.Window):
 
 
     def _on_delete(self, widget, start, end):
-        #print("text = ", self.entry.get_text())
-        #print("del = ", )
-        #print("=", self.entry.get_text())
+        #print("chain2 = ", self.chain)
+        #print("2text = ", self.entry.get_text())
+        #print("2del = ", self.entry.get_text()[start:end])
         if self.non_delete_update:
             self.non_delete_update = False
         else:
@@ -120,16 +124,23 @@ class MainWindow(Gtk.Window):
             #for x in range(deleted_contexts):
             #    self.chain.pop()
             total_contexts = self.entry.get_text().count("/")
+            #print("total = ", total_contexts)
             del_contexts = self.entry.get_text()[start:end].count("/")
+            #print("del_contexts = ", del_contexts)
+            #print("removed from chain")
             self.chain = self.chain[:total_contexts-del_contexts]
         #print("chain (del) = ", self.chain)
 
 
+
     def _on_search_key(self, widget, event):
+        #print("chain (1) = ", self.chain)
         if event.keyval == Gdk.KEY_slash:    
             self.non_character_keypress = False     
+            #self.non_delete_update = True
             current_row = self.listbox.get_selected_row()
             if current_row:
+                #print("Hit")
                 new_text = current_row.action.name
                 entry_text = self.entry.get_text()
                 if "/" in entry_text:
@@ -138,7 +149,7 @@ class MainWindow(Gtk.Window):
                 self.chain.append(current_row.action)
 
             self.entry.set_position(len(self.entry.get_text()))
-            #print("chain (sla) = ", self.chain)
+            #print("chain (2) = ", self.chain)
 
         elif event.keyval == Gdk.KEY_Tab and len(self.listbox.get_children()) > 0:
             self.non_character_keypress = True
@@ -204,6 +215,7 @@ class MainWindow(Gtk.Window):
         row = self.listbox.get_selected_row()
         if row:
             self._run_action(self.listbox, row)
+        self.entry.grab_focus()
 
     def _on_quit(self,  *args):
         self.keybinder.stop()
@@ -216,6 +228,10 @@ class MainWindow(Gtk.Window):
             self.toggle_visibility()
 
     def _show(self):
+        self.resize(
+            self.get_screen().get_width()*.20,
+            self.get_screen().get_height()
+        )
         self.move(0, 0)
         self.show()
         self.entry.grab_focus()
