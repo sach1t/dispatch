@@ -215,6 +215,7 @@ class MainWindow(Gtk.Window):
         row = self.listbox.get_selected_row()
         if row:
             self._run_action(self.listbox, row)
+            
         self.entry.grab_focus()
 
     def _on_quit(self,  *args):

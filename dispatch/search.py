@@ -74,8 +74,14 @@ class Searcher:
         #print(matches)
         #print(query)
         #print("-------"*5)
-        return matches + live_actions
+
+        return self.order_by_usage(matches) + live_actions
    
+
+    def order_by_usage(self, matches):
+        return sorted(matches, key=lambda z:-1*self.past_data.get(z.name,0))
+
+
 
     def rank(self, query, matches):
         if query in self.past_data:
@@ -86,7 +92,8 @@ class Searcher:
             matches.insert(0, found)
 
     def heuristic_data(self, query, action):
-        self.past_data[query] = action.name
+        # just to see commonly used items
+        self.past_data[action.name] = self.past_data.get(action.name, 0) + 1
 
     def _create_trie(self, actions):
         T = Trie()
