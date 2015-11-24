@@ -25,6 +25,9 @@ class ActionOperator:
             return (False, False)
         return (False, False)
 
+    def reload(self):
+        ''' reload the data '''
+        pass
 
     def get_actions_for(self, action, query = ""):
         '''Return list of actions.

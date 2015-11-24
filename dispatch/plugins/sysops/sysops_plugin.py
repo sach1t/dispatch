@@ -13,6 +13,9 @@ class SysOpsOperator(ActionOperator):
         ActionOperator.__init__(self)
 
 
+    def reload(self):
+        pass
+
     def operates_on(self, action):
         if action is None:
             return (True, False)

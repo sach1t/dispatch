@@ -7,6 +7,12 @@ class Searcher:
         self.operators = operators
         self.cache = {}
 
+    def reload(self):
+        self.cache = {}
+        for op in self.operators:
+            op.reload()
+
+
     def basic_search(self, query, chain):
         if query.strip() == "":
             return []

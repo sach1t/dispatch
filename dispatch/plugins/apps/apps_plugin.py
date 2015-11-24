@@ -20,6 +20,9 @@ class AppArgumentOperator(ActionOperator):
             return (True, True)
         return (False, False)
 
+    def reload(self):
+        pass
+
     def get_actions_for(self, action, query=""):
         query = query.strip()
         if query.startswith(self.prompt):
@@ -59,6 +62,10 @@ class AppsOperator(ActionOperator):
         for p in self.paths:
             self.actions.extend(self._generate_app_actions(p))
 
+    def reload(self):
+        self.actions = []
+        for p in self.paths:
+            self.actions.extend(self._generate_app_actions(p))   
 
     def operates_on(self, action):
         if action is None:

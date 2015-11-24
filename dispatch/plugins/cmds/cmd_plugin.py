@@ -21,6 +21,9 @@ class StdoutPipeOperator(ActionOperator):
             return (True, False)
         return (False, False)
 
+    def reload(self):
+        pass
+
     def get_actions_for(self, action, query=""):
         if "cmd" in action.data:
             cmd = action.data["cmd"]
@@ -60,6 +63,9 @@ class StdoutOperator(ActionOperator):
             data = action.data
             )]
 
+    def reload(self):
+        pass
+
     def _open(self, action):
         if "cmd" in action.data:
             cmd = action.data["cmd"]
@@ -79,6 +85,10 @@ class CmdOperator(ActionOperator):
         self.terminal = "gnome-terminal"
         self.generate_actions(self.paths)
 
+    def reload(self):
+        self.actions = []
+        self.generate_actions(self.paths)
+
     def find_executables(self, directory):
         executables = []
         for filename in os.listdir(directory):
@@ -88,8 +98,7 @@ class CmdOperator(ActionOperator):
         return executables
 
     def generate_actions(self, paths):
-        env_paths = os.environ['PATH'].split(':')
-        for path in env_paths:
+        for path in self.paths:
             execs = self.find_executables(path)
             for filename in execs:
                 act = CmdAction(

@@ -227,6 +227,15 @@ class MainWindow(Gtk.Window):
     def _on_key_release(self,  widget, event, data=None):
         if event.keyval == Gdk.KEY_Escape:
             self.toggle_visibility()
+        elif event.keyval == Gdk.KEY_F6:
+            self.entry.set_text("")
+            for child in self.listbox.get_children():
+                child.destroy()
+            self.non_character_keypress = False
+            self.non_delete_update = False
+            self.chain = []
+            self.searcher.reload()
+            print("reload")
 
     def _show(self):
         self.resize(

@@ -28,6 +28,12 @@ class FileOperator(ActionOperator):
         return (False, False)
 
 
+    def reload(self):
+        self.actions = []
+        for p in self.paths:
+            self.actions.extend(self._generate_file_actions(p))
+
+
     def get_actions_for(self, action, query=""):
         return self.actions
 
