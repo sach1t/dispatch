@@ -26,8 +26,10 @@ class StdoutPipeOperator(ActionOperator):
             cmd = action.data["cmd"]
         cmd += " "
         if "args" in action.data:
-            cmd += action.data["args"]    
-        output = subprocess.check_output(cmd.split()).decode("utf-8")
+            cmd += action.data["args"]   
+
+        pipe = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
+        output = pipe.communicate()[0].decode("utf-8")
         return [TextAction(
             name = output,
             description = output,

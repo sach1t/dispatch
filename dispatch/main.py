@@ -3,8 +3,8 @@ from dispatch.ui.mainwindow import MainWindow
 from gi.repository import Gtk, GObject
 from dispatch.plugin_manager import PluginManager
 import os 
-def read_css(filename):
-    with open(filename) as f:
+def read_css(path):
+    with open(os.path.expanduser(path)) as f:
         data = f.read()
     return data
 
@@ -15,7 +15,7 @@ def main():
     plugins = plugin_manager.get_plugins()
     print("Loaded Plugins : ", plugins)
     searcher = Searcher(plugins)
-    style = read_css("./dispatch/ui/style.css")
+    style = read_css("~/launcher/dispatch/dispatch/ui/style.css")
     os.chdir(os.path.expanduser("~"))
     win = MainWindow(searcher, style)
     win.show_all()
