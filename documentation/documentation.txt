@@ -7,3 +7,4 @@
 - the / also limits the arguments to operators eg. for paths
 - dont crash with malformed extensions
 - stay fast get faster 
+- Add description, colors themeing, icons and etc...
