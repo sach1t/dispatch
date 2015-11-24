@@ -1,7 +1,9 @@
 - Clean up the code
 - the extension interface is a bit messy
-- the heuristic is broken with completion
+- Add a better heuristic instead of frequently used ... or maybe it is fine
 - passing arguments works but it is hack around the api involving live queries
 - the searching could be a bit better allow words in middle
+	- trie is selling point so dont change that 
 - the / also limits the arguments to operators eg. for paths
-- 
+- dont crash with malformed extensions
+- stay fast get faster 
