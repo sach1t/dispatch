@@ -29,21 +29,24 @@ class ActionOperator:
         ''' reload the data '''
         pass
 
-    def get_actions_for(self, action, query = ""):
+    def get_actions_for(self, action, query=""):
         '''Return list of actions.
         if live = True current query will be given.
         operates_on(obj) guarenteed to be true.
-        If you are live, it is your responsibility to make sure 
+        If you are live, it is your responsibility to make sure
         that the actions returned match the query'''
         return []
+
 
 class AppAction(Action):
     def __init__(self, name, description, run, data=None, icon=None):
         Action.__init__(self, name, description, run, data, icon)
 
+
 class AppWithArgsAction(Action):
     def __init__(self, name, description, run, data=None, icon=None):
         Action.__init__(self, name, description, run, data, icon)
+
 
 class TextAction(Action):
     def __init__(self, name, description, run, data=None, icon=None):

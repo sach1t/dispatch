@@ -1,22 +1,39 @@
-import gi
-gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, GObject
 from keybinder.keybinder_gtk import KeybinderGtk
+import os
+
+
+
+
+
+
+
+
+
 
 
 class MainWindow(Gtk.Window):
-    def __init__(self, searcher, style):
+
+    DEFAULT_CSS = "~/launcher/dispatch/dispatch/ui/style.css"
+
+    def __init__(self, searcher):
         Gtk.Window.__init__(self, title="Dispatch")
         self.searcher = searcher
 
         self._set_window_properties()
         self._create_layout()
         self._register_key_bindings()
-        self._set_style(style)
+        self._set_style()
+
         self._register_gtk_callbacks()
         self.non_character_keypress = False
         self.chain = []
         self.non_delete_update = False
+
+    def read_css(self, path):
+        with open(os.path.expanduser(path)) as f:
+            data = f.read()
+        return data.encode()
 
     def _set_window_properties(self):
         self.set_decorated(False)
@@ -25,7 +42,7 @@ class MainWindow(Gtk.Window):
         self.set_default_geometry(
             self.get_screen().get_width()*.20,
             self.get_screen().get_height()
-        ) # not sure if needed 
+        )  # not sure if needed
         self.resize(
             self.get_screen().get_width()*.20,
             self.get_screen().get_height()
@@ -60,10 +77,7 @@ class MainWindow(Gtk.Window):
         scrolled.add(self.listbox)
         self.main_box.pack_start(scrolled, True, True, 0)
 
-
         self.main_box.set_focus_chain([self.entry])
-
-
 
     def _register_key_bindings(self):
         self.keybinder = KeybinderGtk()
@@ -71,12 +85,12 @@ class MainWindow(Gtk.Window):
         self.keybinder.register(key, self.toggle_visibility)
         self.keybinder.start()
 
-    def _set_style(self, css):
+    def _set_style(self):
         style_provider = Gtk.CssProvider()
-        style_provider.load_from_data(css.encode())
+        style_provider.load_from_data(self.read_css(MainWindow.DEFAULT_CSS))
         Gtk.StyleContext.add_provider_for_screen(
             Gdk.Screen.get_default(),
-            style_provider, 
+            style_provider,
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
@@ -86,16 +100,15 @@ class MainWindow(Gtk.Window):
         self.connect("focus-out-event", self._on_lost_focus)
         self.connect("key-release-event", self._on_key_release)
 
-        self.entry.connect("key-press-event", self._on_search_key) #key pressed 
-        self.entry.connect("changed", self._on_search_changed) # before entry changes
-        #self.entry.connect("key-release-event", self._on_search_key_release) #key pressed 
+        self.entry.connect("key-press-event", self._on_search_key)  # key pressed 
+        self.entry.connect("changed", self._on_search_changed)  # before entry changes
+        # self.entry.connect("key-release-event", self._on_search_key_release) #key pressed
 
         self.entry.connect("activate", self._on_search_submit)
-        #self.entry.connect("insert-text", self._on_insert)
+        # self.entry.connect("insert-text", self._on_insert)
         self.entry.connect("delete-text", self._on_delete)
 
         self.listbox.connect("row-activated", self._run_action)
-
 
     def _listbox_row_delta(self, listbox, delta):
         picked_row_index = listbox.get_selected_row().get_index()
