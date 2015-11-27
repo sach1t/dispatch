@@ -1,1 +1,1 @@
-from .apps_plugin import AppsOperator, AppArgumentOperator
+from .apps_plugin import AppsOperator, AppAction

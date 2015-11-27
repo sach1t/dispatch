@@ -4,13 +4,13 @@ import os
 import fnmatch
 
 class FileAction(Action):
-    def __init__(self, name, description, run, data=None, icon=None, cacheable=True):
-        Action.__init__(self, name, description, run, data, icon, cacheable)
+    def __init__(self, name, description, run, data=None, icon=None):
+        Action.__init__(self, name, description, run, data, icon)
 
 
 class DirectoryAction(Action):
-    def __init__(self, name, description, run, data=None, icon=None, cacheable=True):
-        Action.__init__(self, name, description, run, data, icon, cacheable)
+    def __init__(self, name, description, run, data=None, icon=None):
+        Action.__init__(self, name, description, run, data, icon)
 
 
 class FileOperator(ActionOperator):
@@ -22,18 +22,15 @@ class FileOperator(ActionOperator):
         for p in self.paths:
             self.actions.extend(self._generate_file_actions(p))
 
-
     def operates_on(self, action):
         if action is None:
             return (True, False)
         return (False, False)
 
-
     def reload(self):
         self.actions = []
         for p in self.paths:
             self.actions.extend(self._generate_file_actions(p))
-
 
     def get_actions_for(self, action, query=""):
         return self.actions
@@ -45,7 +42,6 @@ class FileOperator(ActionOperator):
 
     def _generate_file_actions(self, path):
         # we dont follow links bc of potential link loops
-
         path = os.path.expanduser(path)
         file_actions = []
 

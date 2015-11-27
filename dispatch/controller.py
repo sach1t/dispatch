@@ -9,7 +9,10 @@ class Controller:
         self.searcher = Searcher(plugins)
 
     def run_action(self, action):
-        action.run(action)
+        if action.run is not None:
+            action.run(action)
+            return True
+        return False
 
     def add_heuristic_data(self, query, action):
         self.searcher.heuristic_data(query, action)
@@ -20,6 +23,4 @@ class Controller:
         self.searcher.empty_cache()
 
     def search(self, query, action=None):
-        print("query = ", query)
-        print("action = ", repr(action))
         return self.searcher.search(query, action)

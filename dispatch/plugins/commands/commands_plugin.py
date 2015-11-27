@@ -3,15 +3,10 @@ import os
 import subprocess
 import sys
 
-class SysOpAction(Action):
-    def __init__(self, name, description, run, data=None, icon=None, cacheable=True):
-        Action.__init__(self, name, description, run, data, icon, cacheable)
 
-
-class SysOpsOperator(ActionOperator):
+class CommandOperator(ActionOperator):
     def __init__(self):
         ActionOperator.__init__(self)
-
 
     def reload(self):
         pass
@@ -21,14 +16,16 @@ class SysOpsOperator(ActionOperator):
             return (True, False)
         return (False, False)
 
-
     def get_actions_for(self, action, query=""):
-        act1 = SysOpAction(
+        act1 = Action(
             name = "suspend",
             description = "",
             run = self._run,
             data = {"cmd": "systemctl suspend"}
         )
+
+        # Add commands here ... like above
+
         return [act1]
 
     def _run(self, action):

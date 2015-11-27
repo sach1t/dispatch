@@ -253,6 +253,7 @@ class MainWindow(Gtk.Window):
         return row
 
     def _run_action(self, listbox, listrow):
-        self.controller.run_action(listrow.action)
+        can_run = self.controller.run_action(listrow.action)
         self.controller.add_heuristic_data(self._get_query(self.entry.get_text()), listrow.action)
-        self.toggle_visibility()
+        if can_run:
+            self.toggle_visibility()

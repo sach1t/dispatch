@@ -14,8 +14,9 @@ class Searcher:
 
     def search_operators(self, action, query):
         actions_live = []
-        actions_static = []
+        actions_static_trie = []
         if action in self.cache:
+            actions_static_trie = self.cache[action]
             for op in self.operators:
                 op_operates, op_live = op.operates_on(action)
                 if op_operates and op_live:
@@ -26,10 +27,12 @@ class Searcher:
                 if op_operates and op_live:
                     actions_live.extend(op.get_actions_for(action, query))
                 elif op_operates and not op_live:
-                    actions_static.extend(op.get_actions_for(action, query))
+                    actions_static_trie.extend(op.get_actions_for(action, query))
+            actions_static_trie = self._create_trie(actions_static_trie)
+            if action is None or action.cacheable:
+                self.cache[action] = actions_static_trie
 
-            self.cache[action] = self._create_trie(actions_static)
-        return [self.cache[action], actions_live]
+        return [actions_static_trie, actions_live]
 
 
     def search(self, query, action):
