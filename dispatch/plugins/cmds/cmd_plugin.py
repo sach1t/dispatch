@@ -4,12 +4,12 @@ import os
 import stat
 
 class StdoutAction(Action):
-    def __init__(self, name, description, run, data=None, icon=None):
-        Action.__init__(self, name, description, run, data, icon)
+    def __init__(self, name, description, run, data=None, icon=None, cacheable=True):
+        Action.__init__(self, name, description, run, data, icon, cacheable)
 
 class CmdAction(Action):
-    def __init__(self, name, description, run, data=None, icon=None):
-        Action.__init__(self, name, description, run, data, icon)
+    def __init__(self, name, description, run, data=None, icon=None, cacheable=True):
+        Action.__init__(self, name, description, run, data, icon, cacheable)
 
 
 class StdoutPipeOperator(ActionOperator):

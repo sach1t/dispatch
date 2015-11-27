@@ -6,10 +6,6 @@ import os
 import glob
 
 
-
-# TODO: when app wants arguments it should not use the live query we should pass off
-# arguments to it another way bc otherwise it will modify ... wiat. this one is weird
-
 class AppArgumentOperator(ActionOperator):
     def __init__(self):
         ActionOperator.__init__(self)

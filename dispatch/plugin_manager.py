@@ -13,7 +13,7 @@ class PluginManager:
     def __init__(self):
         self.plugins = []
 
-    def load_plugins(self):
+    def load_operators(self):
         for loader, module_name, ispkg in modules:
             if module_name not in sys.modules:
                 loaded_module = __import__(package + "." + module_name,
@@ -29,7 +29,7 @@ class PluginManager:
                     obj = loaded_class()
                     self.plugins.append(obj)
 
-    def get_plugins(self):
+    def get_operators(self):
         return self.plugins
 
     def _get_class_name(self, module_name):

@@ -4,12 +4,13 @@ import os
 import fnmatch
 
 class FileAction(Action):
-    def __init__(self, name, description, run, data=None, icon=None):
-        Action.__init__(self, name, description, run, data, icon)
+    def __init__(self, name, description, run, data=None, icon=None, cacheable=True):
+        Action.__init__(self, name, description, run, data, icon, cacheable)
+
 
 class DirectoryAction(Action):
-    def __init__(self, name, description, run, data=None, icon=None):
-        Action.__init__(self, name, description, run, data, icon)
+    def __init__(self, name, description, run, data=None, icon=None, cacheable=True):
+        Action.__init__(self, name, description, run, data, icon, cacheable)
 
 
 class FileOperator(ActionOperator):

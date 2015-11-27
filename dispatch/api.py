@@ -1,10 +1,11 @@
 class Action:
-    def __init__(self, name, description, run, data=None, icon=None):
+    def __init__(self, name, description, run, data=None, icon=None, cacheable=True):
         self.name = name
         self.description = description
         self.run = run
         self.data = data
         self.icon = icon
+        self.cacheable = cacheable
 
     def __str__(self):
         return "{0}".format(self.name)
@@ -39,15 +40,15 @@ class ActionOperator:
 
 
 class AppAction(Action):
-    def __init__(self, name, description, run, data=None, icon=None):
-        Action.__init__(self, name, description, run, data, icon)
+    def __init__(self, name, description, run, data=None, icon=None, cacheable=True):
+        Action.__init__(self, name, description, run, data, icon, cacheable)
 
 
 class AppWithArgsAction(Action):
-    def __init__(self, name, description, run, data=None, icon=None):
-        Action.__init__(self, name, description, run, data, icon)
+    def __init__(self, name, description, run, data=None, icon=None, cacheable=True):
+        Action.__init__(self, name, description, run, data, icon, cacheable)
 
 
 class TextAction(Action):
-    def __init__(self, name, description, run, data=None, icon=None):
-        Action.__init__(self, name, description, run, data, icon)
+    def __init__(self, name, description, run, data=None, icon=None, cacheable=True):
+        Action.__init__(self, name, description, run, data, icon, cacheable)

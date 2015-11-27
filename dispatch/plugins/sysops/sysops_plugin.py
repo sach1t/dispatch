@@ -4,8 +4,8 @@ import subprocess
 import sys
 
 class SysOpAction(Action):
-    def __init__(self, name, description, run, data=None, icon=None):
-        Action.__init__(self, name, description, run, data, icon)
+    def __init__(self, name, description, run, data=None, icon=None, cacheable=True):
+        Action.__init__(self, name, description, run, data, icon, cacheable)
 
 
 class SysOpsOperator(ActionOperator):

@@ -2,38 +2,24 @@ from gi.repository import Gtk, Gdk, GObject
 from keybinder.keybinder_gtk import KeybinderGtk
 import os
 
-
-
-
-
-
-
-
-
-
-
 class MainWindow(Gtk.Window):
 
     DEFAULT_CSS = "~/launcher/dispatch/dispatch/ui/style.css"
+    TRIGGER = "<Ctrl>space"
 
-    def __init__(self, searcher):
+    def __init__(self, controller):
         Gtk.Window.__init__(self, title="Dispatch")
-        self.searcher = searcher
 
         self._set_window_properties()
         self._create_layout()
-        self._register_key_bindings()
         self._set_style()
-
         self._register_gtk_callbacks()
+        self._register_key_bindings()
+
+        self.controller = controller
         self.non_character_keypress = False
         self.chain = []
         self.non_delete_update = False
-
-    def read_css(self, path):
-        with open(os.path.expanduser(path)) as f:
-            data = f.read()
-        return data.encode()
 
     def _set_window_properties(self):
         self.set_decorated(False)
@@ -42,13 +28,13 @@ class MainWindow(Gtk.Window):
         self.set_default_geometry(
             self.get_screen().get_width()*.20,
             self.get_screen().get_height()
-        )  # not sure if needed
+        )
         self.resize(
             self.get_screen().get_width()*.20,
             self.get_screen().get_height()
         )
         self.move(0, 0)
-        self.set_opacity(.95)
+        self.set_opacity(.90)
         self.set_name("MainWindow")
 
         self.screen = self.get_screen()
@@ -57,6 +43,7 @@ class MainWindow(Gtk.Window):
             self.set_visual(self.visual)
 
     def _create_layout(self):
+        # container for search box and results
         self.main_box = Gtk.Box(
             orientation=Gtk.Orientation.VERTICAL,
             spacing=5
@@ -73,17 +60,16 @@ class MainWindow(Gtk.Window):
         self.listbox = Gtk.ListBox()
         self.listbox.set_selection_mode(Gtk.SelectionMode.SINGLE)
         scrolled = Gtk.ScrolledWindow()
-        scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        scrolled.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         scrolled.add(self.listbox)
         self.main_box.pack_start(scrolled, True, True, 0)
 
         self.main_box.set_focus_chain([self.entry])
 
-    def _register_key_bindings(self):
-        self.keybinder = KeybinderGtk()
-        key = "<Ctrl>space"
-        self.keybinder.register(key, self.toggle_visibility)
-        self.keybinder.start()
+    def read_css(self, path):
+        with open(os.path.expanduser(path)) as f:
+            data = f.read()
+        return data.encode()
 
     def _set_style(self):
         style_provider = Gtk.CssProvider()
@@ -100,15 +86,17 @@ class MainWindow(Gtk.Window):
         self.connect("focus-out-event", self._on_lost_focus)
         self.connect("key-release-event", self._on_key_release)
 
-        self.entry.connect("key-press-event", self._on_search_key)  # key pressed 
-        self.entry.connect("changed", self._on_search_changed)  # before entry changes
-        # self.entry.connect("key-release-event", self._on_search_key_release) #key pressed
-
+        self.entry.connect("key-press-event", self._on_search_key) # key press
+        self.entry.connect("changed", self._on_search_changed) # before change
         self.entry.connect("activate", self._on_search_submit)
-        # self.entry.connect("insert-text", self._on_insert)
         self.entry.connect("delete-text", self._on_delete)
 
         self.listbox.connect("row-activated", self._run_action)
+
+    def _register_key_bindings(self):
+        self.keybinder = KeybinderGtk()
+        self.keybinder.register(MainWindow.TRIGGER, self.toggle_visibility)
+        self.keybinder.start()
 
     def _listbox_row_delta(self, listbox, delta):
         picked_row_index = listbox.get_selected_row().get_index()
@@ -119,50 +107,26 @@ class MainWindow(Gtk.Window):
             next_row_index = len(listbox.get_children()) - 1
         return next_row_index
 
-
-    # def _on_search_key_release(self, widget, event):
-    #     if event.keyval == Gdk.KEY_BackSpace:
-    #         total_contexts = self.entry.get_text().count("/")
-    #         self.chain = self.chain[:total_contexts]
-
-
     def _on_delete(self, widget, start, end):
-        #print("chain2 = ", self.chain)
-        #print("2text = ", self.entry.get_text())
-        #print("2del = ", self.entry.get_text()[start:end])
         if self.non_delete_update:
             self.non_delete_update = False
         else:
-            #deleted_contexts = self.entry.get_text()[start:end].count('/')
-            #for x in range(deleted_contexts):
-            #    self.chain.pop()
             total_contexts = self.entry.get_text().count("/")
-            #print("total = ", total_contexts)
             del_contexts = self.entry.get_text()[start:end].count("/")
-            #print("del_contexts = ", del_contexts)
-            #print("removed from chain")
             self.chain = self.chain[:total_contexts-del_contexts]
-        #print("chain (del) = ", self.chain)
-
-
 
     def _on_search_key(self, widget, event):
-        #print("chain (1) = ", self.chain)
         if event.keyval == Gdk.KEY_slash:    
             self.non_character_keypress = False     
-            #self.non_delete_update = True
             current_row = self.listbox.get_selected_row()
             if current_row:
-                #print("Hit")
                 new_text = current_row.action.name
                 entry_text = self.entry.get_text()
                 if "/" in entry_text:
                     new_text = entry_text[:entry_text.rindex('/')+1] + new_text
                 self.entry.set_text(new_text)
                 self.chain.append(current_row.action)
-
             self.entry.set_position(len(self.entry.get_text()))
-            #print("chain (2) = ", self.chain)
 
         elif event.keyval == Gdk.KEY_Tab and len(self.listbox.get_children()) > 0:
             self.non_character_keypress = True
@@ -214,6 +178,11 @@ class MainWindow(Gtk.Window):
                 self.entry.set_text(new_text)
                 self.entry.grab_focus()
 
+    def _get_query(self, full_query):
+        if "/" in full_query:
+            full_query = full_query[full_query.rindex("/"):]
+        return full_query 
+
     def _on_search_changed(self, widget):
         if self.non_character_keypress:
             self.non_character_keypress = False
@@ -221,11 +190,12 @@ class MainWindow(Gtk.Window):
             text = widget.get_text()
             for child in self.listbox.get_children():
                 child.destroy() # this could be more efficient instead of always flushing out the old results
-            matches = self.searcher.search(text, self.chain)
+            matches = self.controller.search(self._get_query(text), self.chain[-1] if len(self.chain) > 0 else None)
+            print(matches)
             self._show_matches(matches)
 
     def _on_search_submit(self, widget):
-        row = self.listbox.get_selected_row()
+        row = self.listbox.get_selected_row()   
         if row:
             self._run_action(self.listbox, row)
             
@@ -247,8 +217,7 @@ class MainWindow(Gtk.Window):
             self.non_character_keypress = False
             self.non_delete_update = False
             self.chain = []
-            self.searcher.reload()
-            print("reload")
+            self.controller.reload_plugins()
 
     def _show(self):
         self.resize(
@@ -284,9 +253,6 @@ class MainWindow(Gtk.Window):
         return row
 
     def _run_action(self, listbox, listrow):
-        if hasattr(listrow, "action"):
-            listrow.action.run(listrow.action)
-            # we dont execute through another function bc we want it to be as fast as possible
-            # even though another function call is cheap, pennies count
-            self.searcher.heuristic_data(self.entry.get_text(), listrow.action)
-            self.toggle_visibility()
+        self.controller.run_action(listrow.action)
+        self.controller.add_heuristic_data(self._get_query(self.entry.get_text()), listrow.action)
+        self.toggle_visibility()
