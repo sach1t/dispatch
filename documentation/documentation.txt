@@ -9,4 +9,5 @@
 - dont crash with malformed extensions
 - stay fast get faster 
 	- regression in later version after icons
+	- the re creating of stuff in the view is slow
 - Add colors themeing, ...
