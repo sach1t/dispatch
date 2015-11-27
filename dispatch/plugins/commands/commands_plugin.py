@@ -19,7 +19,7 @@ class CommandOperator(ActionOperator):
     def get_actions_for(self, action, query=""):
         act1 = Action(
             name = "suspend",
-            description = "",
+            description = "systemctl",
             run = self._run,
             data = {"cmd": "systemctl suspend"}
         )

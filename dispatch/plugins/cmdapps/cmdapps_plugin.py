@@ -29,7 +29,7 @@ class AppArgumentOperator(ActionOperator):
 
         act2 = AppWithArgsAction(
             name = self.prompt + query,
-            description = "run with args",
+            description = "",
             run = self._launch_application,
             data = action.data.copy()
         )
@@ -79,13 +79,13 @@ class StdoutOperator(ActionOperator):
             output = self._get_output(action)
             return [TextAction(
                 name = output,
-                description = output,
+                description = "",
                 run = None,
                 data = {}
             )]
         else:
             return [StdoutAction(
-                name = "get output",
+                name = "output",
                 description = "",
                 run = None,
                 data = action.data
@@ -131,7 +131,7 @@ class CmdOperator(ActionOperator):
             for filename in execs:
                 act = CmdAction(
                     name = filename,
-                    description = "",
+                    description = "cmd",
                     run = self._open,
                     data = {"cmd":  filename}
                 )

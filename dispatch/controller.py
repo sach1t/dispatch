@@ -18,7 +18,7 @@ class Controller:
         self.searcher.heuristic_data(query, action)
     
     def reload_plugins(self):
-        for plug in self.plugin_manager.get_plugins():
+        for plug in self.plugin_manager.get_operators():
             plug.reload()
         self.searcher.empty_cache()
 

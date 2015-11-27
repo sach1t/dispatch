@@ -53,7 +53,7 @@ class AppsOperator(ActionOperator):
             # TODO: Comply with  full DesktopEntries spec - OnlyShowIn, TryExec
                 action = AppAction(
                     name = app.getName(),
-                    description = "",
+                    description = "application", #app.getComment()
                     run = self._launch_application, 
                     data = {"desktop_entry": app, "cmd":self.get_cmd(app)}, # could reduce later to save on memory replace with cmd
                 )

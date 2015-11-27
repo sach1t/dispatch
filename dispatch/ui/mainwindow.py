@@ -191,7 +191,6 @@ class MainWindow(Gtk.Window):
             for child in self.listbox.get_children():
                 child.destroy() # this could be more efficient instead of always flushing out the old results
             matches = self.controller.search(self._get_query(text), self.chain[-1] if len(self.chain) > 0 else None)
-            print(matches)
             self._show_matches(matches)
 
     def _on_search_submit(self, widget):
@@ -246,8 +245,18 @@ class MainWindow(Gtk.Window):
     def create_row(self, action):
         row = Gtk.ListBoxRow()
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
-        label = Gtk.Label(action.name, xalign=0)
-        hbox.pack_start(label, True, True, 0)
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+
+        name_label = Gtk.Label(action.name, xalign=0)
+        #name_label.set_name("action")
+        description_label = Gtk.Label(action.description, xalign=0)
+        #description_label.set_name("description")
+        vbox.pack_start(name_label, True, True, 0)
+        vbox.pack_start(description_label, True, True, 0)
+
+
+
+        hbox.pack_start(vbox, True, True, 0)
         row.add(hbox)
         row.action = action
         return row
