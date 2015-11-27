@@ -31,7 +31,6 @@ class Searcher:
             actions_static_trie = self._create_trie(actions_static_trie)
             if action is None or action.cacheable:
                 self.cache[action] = actions_static_trie
-
         return [actions_static_trie, actions_live]
 
 

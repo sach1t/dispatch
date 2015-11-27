@@ -14,7 +14,6 @@ class Trie:
     def __init__(self):
         '''Create empty Trie.'''
         self.root = TrieNode("", None)
-        self.last_query = ("", self.root)
 
     def insert(self, key, data):
         '''Insert key with corresponding data.'''
@@ -29,15 +28,7 @@ class Trie:
 
     def find_matches(self, key):
         '''Return data of all nodes with suffix equal to key'''
-
-        if key.startswith(self.last_query[0]):
-            start = self.last_query[1]
-            key = key.replace(self.last_query[0], "", 1)
-        else:
-            start = self.root
-
-        node = self.search(key, start)
-        self.last_query=(key, node)
+        node = self.search(key)
 
         # BFS - The shortest match is shown first
         results = []
@@ -49,9 +40,9 @@ class Trie:
                 stack.extend(u.children.values())
         return results
 
-    def search(self, key, start):
+    def search(self, key):
         '''Return node with suffix equal to given key.'''
-        node = start
+        node = self.root
         if node:
             for char in key:
                 if char in node.children:
