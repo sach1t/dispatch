@@ -249,15 +249,12 @@ class MainWindow(Gtk.Window):
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
 
         name_label = Gtk.Label(action.name, xalign=0)
-        #name_label.set_name("action")
         description_label = Gtk.Label(action.description, xalign=0)
-        #description_label.set_name("description")
         vbox.pack_start(name_label, True, True, 0)
         vbox.pack_start(description_label, True, True, 0)
 
         if MainWindow.ICONS:
             if action.icon:
-
                 hbox.pack_start(action.icon, False, True, 0)
                 hbox.pack_start(vbox, True, True, 0)
             else:
