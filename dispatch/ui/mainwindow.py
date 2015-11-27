@@ -1,4 +1,4 @@
-from gi.repository import Gtk, Gdk, GObject
+from gi.repository import Gtk, Gdk, GObject, GdkPixbuf
 from keybinder.keybinder_gtk import KeybinderGtk
 import os
 
@@ -34,7 +34,7 @@ class MainWindow(Gtk.Window):
             self.get_screen().get_height()
         )
         self.move(0, 0)
-        self.set_opacity(.90)
+        self.set_opacity(1)
         self.set_name("MainWindow")
 
         self.screen = self.get_screen()
@@ -219,10 +219,10 @@ class MainWindow(Gtk.Window):
             self.controller.reload_plugins()
 
     def _show(self):
-        self.resize(
-            self.get_screen().get_width()*.20,
-            self.get_screen().get_height()
-        )
+        # self.resize(
+        #     self.get_screen().get_width()*.20,
+        #     self.get_screen().get_height()
+        # )
         self.move(0, 0)
         self.show()
         self.entry.grab_focus()
@@ -254,9 +254,15 @@ class MainWindow(Gtk.Window):
         vbox.pack_start(name_label, True, True, 0)
         vbox.pack_start(description_label, True, True, 0)
 
-
-
-        hbox.pack_start(vbox, True, True, 0)
+        if action.icon:
+            pixbuf = GdkPixbuf.Pixbuf().new_from_file(action.icon)
+            pixbuf = pixbuf.scale_simple(16, 16, GdkPixbuf.InterpType.BILINEAR)
+            image = Gtk.Image().new_from_pixbuf(pixbuf)
+            image.set_from_pixbuf(pixbuf)
+            hbox.pack_start(image, False, True, 0)
+            hbox.pack_start(vbox, True, True, 0)
+        else:
+            hbox.pack_start(vbox, True, True, 26)
         row.add(hbox)
         row.action = action
         return row

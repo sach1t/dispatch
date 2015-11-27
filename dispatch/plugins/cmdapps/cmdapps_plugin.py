@@ -29,7 +29,7 @@ class AppArgumentOperator(ActionOperator):
 
         act2 = AppWithArgsAction(
             name = self.prompt + query,
-            description = "",
+            description = "run with arguments",
             run = self._launch_application,
             data = action.data.copy()
         )
@@ -86,7 +86,7 @@ class StdoutOperator(ActionOperator):
         else:
             return [StdoutAction(
                 name = "output",
-                description = "",
+                description = "get output",
                 run = None,
                 data = action.data
             )]
@@ -101,7 +101,10 @@ class StdoutOperator(ActionOperator):
         if "args" in stdout_action.data:
             cmd += stdout_action.data["args"]   
         pipe = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
-        output = pipe.communicate()[0].decode("utf-8")
+        try:
+            output = pipe.communicate(timeout=.5)[0].decode("utf-8").strip()
+        except subprocess.TimeoutExpired:
+            output = "Error: Process returned no output."
         return output
 
 
@@ -131,7 +134,7 @@ class CmdOperator(ActionOperator):
             for filename in execs:
                 act = CmdAction(
                     name = filename,
-                    description = "cmd",
+                    description = "command line application",
                     run = self._open,
                     data = {"cmd":  filename}
                 )

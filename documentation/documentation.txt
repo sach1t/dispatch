@@ -1,10 +1,12 @@
-- Clean up the code
 - the extension interface is a bit messy
+	- but it works very well
 - Add a better heuristic instead of frequently used ... or maybe it is fine
 - passing arguments works but it is hack around the api involving live queries
+	- it is not bad and should be discouraged this is not a command line ?
 - the searching could be a bit better allow words in middle
 	- trie is selling point so dont change that 
 - the / also limits the arguments to operators eg. for paths
 - dont crash with malformed extensions
 - stay fast get faster 
-- Add description, colors themeing, icons and etc...
+	- regression in later version after icons
+- Add colors themeing, ...

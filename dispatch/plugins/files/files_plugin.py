@@ -55,7 +55,7 @@ class FileOperator(ActionOperator):
             elif os.path.isfile(curr) and not os.path.islink(curr):
                 action = FileAction(
                     name = curr_basename,
-                    description = "file: " + curr,
+                    description = "file:/" + curr,
                     run = self._open,
                     data = {"path": curr}
                 )
@@ -64,7 +64,7 @@ class FileOperator(ActionOperator):
             elif os.path.isdir(curr) and not os.path.islink(curr):
                 action = DirectoryAction(
                     name = curr_basename,
-                    description = "directory" + curr,
+                    description = "dir:/" + curr,
                     run = self._open,
                     data = {"path": curr}
                 )
