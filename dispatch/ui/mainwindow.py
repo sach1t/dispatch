@@ -23,7 +23,7 @@ class MainWindow(Gtk.Window):
         self.non_delete_update = False
 
     def _set_window_properties(self):
-        #self.set_decorated(False)
+        self.set_decorated(False)
         self.set_keep_above(True)
         self.set_resizable(True)
         self.set_default_geometry(
