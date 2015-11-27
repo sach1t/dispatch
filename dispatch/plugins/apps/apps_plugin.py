@@ -1,4 +1,4 @@
-from dispatch.api import Action, ActionOperator
+from dispatch.api import Action, ActionOperator, get_icon
 from xdg.DesktopEntry import DesktopEntry 
 import subprocess
 import os
@@ -56,17 +56,13 @@ class AppsOperator(ActionOperator):
                     name = app.getName(),
                     description = "application", #app.getComment()
                     run = self._launch_application, 
-                    icon = self.get_icon_path(app.getIcon()),
+                    icon = get_icon(app.getIcon()),
                     data = {"desktop_entry": app, "cmd":self.get_cmd(app)}, # could reduce later to save on memory replace with cmd
                 )
                 app_actions.append(action)
         return app_actions
 
-    def get_icon_path(self, name):
-        icon_info = Gtk.IconTheme.get_default().lookup_icon(name, 48, 0)
-        if icon_info is None:
-            return "" 
-        return icon_info.get_filename()
+
 
     def _launch_application(self, action):
         if "cmd" in action.data:

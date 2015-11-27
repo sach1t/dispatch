@@ -1,3 +1,4 @@
+from gi.repository import Gtk
 class Action:
     def __init__(self, name, description, run, data=None, icon=None, cacheable=True):
         self.name = name
@@ -40,6 +41,14 @@ class ActionOperator:
         The action should not be modified. '''
         return []
 
+
+def get_icon(name):
+    icon_theme = Gtk.IconTheme.get_default()
+    icon_info = icon_theme.lookup_icon(name, 16, Gtk.IconLookupFlags.FORCE_SIZE)
+    if icon_info is not None:
+        pixbuf = icon_info.load_icon()
+        return Gtk.Image().new_from_pixbuf(pixbuf)
+    return None
 
 class TextAction(Action):
     def __init__(self, name, description, run, data=None, icon=None):

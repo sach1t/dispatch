@@ -6,7 +6,7 @@ class MainWindow(Gtk.Window):
 
     DEFAULT_CSS = "~/launcher/dispatch/dispatch/ui/style.css"
     TRIGGER = "<Ctrl>space"
-    ICONS = False
+    ICONS = True
 
     def __init__(self, controller):
         Gtk.Window.__init__(self, title="Dispatch")
@@ -23,7 +23,7 @@ class MainWindow(Gtk.Window):
         self.non_delete_update = False
 
     def _set_window_properties(self):
-        self.set_decorated(False)
+        #self.set_decorated(False)
         self.set_keep_above(True)
         self.set_resizable(True)
         self.set_default_geometry(
@@ -257,11 +257,8 @@ class MainWindow(Gtk.Window):
 
         if MainWindow.ICONS:
             if action.icon:
-                pixbuf = GdkPixbuf.Pixbuf().new_from_file(action.icon)
-                pixbuf = pixbuf.scale_simple(16, 16, GdkPixbuf.InterpType.BILINEAR)
-                image = Gtk.Image().new_from_pixbuf(pixbuf)
-                image.set_from_pixbuf(pixbuf)
-                hbox.pack_start(image, False, True, 0)
+
+                hbox.pack_start(action.icon, False, True, 0)
                 hbox.pack_start(vbox, True, True, 0)
             else:
                 hbox.pack_start(vbox, True, True, 26)
