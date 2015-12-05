@@ -43,10 +43,11 @@ class Searcher:
 
         static_actions_trie, live_actions = self.search_operators(action, query)
 
-        matches = []
+        matches = set()
         for match in static_actions_trie.find_matches(query):
-            matches.append(match)
+            matches.add(match)
 
+        matches = list(matches)
         if len(matches) <= 10:
             matches = self.order_by_usage(matches)
 
