@@ -60,12 +60,20 @@ class Searcher:
     def heuristic_data(self, query, action):
         self.past_data[action.name] = self.past_data.get(action.name, 0) + 1
 
+    def _get_suffixes(self, x):
+        suffixes = [x]
+        end = len(x) - 1
+        while end >= 0:
+            if x[end] == " ":
+                suffixes.append(x[end+1:])
+            end -= 1
+        return suffixes
+
 
     def _create_trie(self, actions):
         T = Trie()
         if actions:  # individual words allow same lookup of object
             for e in actions:
-                T.insert(e.name.lower(), e)
-                for word in e.name.split()[1:]:
+                for word in self._get_suffixes(e.name):
                     T.insert(word.lower(), e)
         return T
