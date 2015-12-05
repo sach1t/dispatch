@@ -66,4 +66,6 @@ class Searcher:
         if actions:  # individual words allow same lookup of object
             for e in actions:
                 T.insert(e.name.lower(), e)
+                for word in e.name.split()[1:]:
+                    T.insert(word.lower(), e)
         return T
