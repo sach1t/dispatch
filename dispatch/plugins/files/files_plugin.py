@@ -1,4 +1,4 @@
-from dispatch.api import Action, ActionOperator
+from dispatch.api import Action, ActionOperator, get_icon
 import subprocess
 import os
 import fnmatch
@@ -57,7 +57,8 @@ class FileOperator(ActionOperator):
                     name = curr_basename,
                     description = "file:/" + curr,
                     run = self._open,
-                    data = {"path": curr}
+                    data = {"path": curr},
+                    icon = get_icon("text-x-generic")
                 )
                 file_actions.append(action)
 
@@ -66,7 +67,8 @@ class FileOperator(ActionOperator):
                     name = curr_basename,
                     description = "dir:/" + curr,
                     run = self._open,
-                    data = {"path": curr}
+                    data = {"path": curr},
+                    icon = get_icon("folder")
                 )
                 file_actions.append(action)
 
