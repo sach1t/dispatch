@@ -1,4 +1,4 @@
-from dispatch.api import Action, ActionOperator, TextAction
+from dispatch.api import Action, ActionOperator, TextAction, get_icon
 import subprocess
 import os
 import stat
@@ -136,7 +136,8 @@ class CmdOperator(ActionOperator):
                     name = filename,
                     description = "command line application",
                     run = self._open,
-                    data = {"cmd":  filename}
+                    data = {"cmd":  filename},
+                    icon = get_icon("utilities-terminal"),
                 )
                 self.actions.append(act)
 
