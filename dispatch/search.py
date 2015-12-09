@@ -1,5 +1,5 @@
 from dispatch.trie import Trie
-
+from dispatch.ordered_set import OrderedSet
 
 class Searcher:
     def __init__(self, operators):
@@ -43,7 +43,7 @@ class Searcher:
 
         static_actions_trie, live_actions = self.search_operators(action, query)
 
-        matches = set()
+        matches = OrderedSet()
         for match in static_actions_trie.find_matches(query):
             matches.add(match)
 

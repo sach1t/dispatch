@@ -1,13 +1,39 @@
 - the extension interface is a bit messy
 	- but it works very well
 - Add a better heuristic instead of frequently used ... or maybe it is fine
+	* should work in all cases not just when < 10
+
 - passing arguments works but it is hack around the api involving live queries
 	- it is not bad and should be discouraged this is not a command line ?
-- the searching could be a bit better allow words in middle
-	- trie is selling point so dont change that 
+
+
 - the / also limits the arguments to operators eg. for paths
+
 - dont crash with malformed extensions
-- stay fast get faster 
+	- processes should not freeze main gui
+
+- SPEED
 	- regression in later version after icons
 	- the re creating of stuff in the view is slow
+    - note that the furthure the words you type you just remove items from the list that was there bc the search is refined... so repopulating is unecessary
+
 - Add colors themeing, ...
+- refinement
+
+- think about api mechanism and if command line is needed
+	- what if want to run  a command then what
+	- it is called dispatch so I think it should support that
+	- eg. systemctl suspend
+	- think of it like intents, them typing more after is = putExtra
+
+
+- maybe more functionality should be built in
+
+- should seperate operator outputs to make it a bit cleaner to understand
+
+
+GOAL
+- minimal + fast (could be better but yes)
+- out of your way (could be better but yes)
+	- not distracting from content
+                      
