@@ -25,12 +25,14 @@
 	- it is called dispatch so I think it should support that
 	- eg. systemctl suspend
 	- think of it like intents, them typing more after is = putExtra
-
+	- ARGUMENTS SHOULD BE BUILT IN
 
 - maybe more functionality should be built in
 
 - should seperate operator outputs to make it a bit cleaner to understand
 
+- NOTE
+	- since trie uses ordered set we get closest match at top
 
 GOAL
 - minimal + fast (could be better but yes)
