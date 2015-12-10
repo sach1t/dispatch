@@ -14,7 +14,7 @@ class RunCommandOperator(ActionOperator):
     def operates_on(self, action):
         if action is None:
             return (True, True)
-
+        return (False, False)
     def reload(self):
         pass
 
