@@ -75,6 +75,10 @@ class Searcher:
         T = Trie()
         if actions:  # individual words allow same lookup of object
             for e in actions:
-                for word in self._get_suffixes(e.name):
-                    T.insert(word.lower(), e)
+                if len(e.name) < 100:
+                    for word in self._get_suffixes(e.name):
+                        T.insert(word.lower(), e)
+                else:
+                    T.insert(e.name.lower(), e)
+
         return T
