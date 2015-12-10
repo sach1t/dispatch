@@ -1,1 +1,1 @@
-from .cmdapps_plugin import CmdOperator, StdoutOperator, AppArgumentOperator
+from .cmdapps_plugin import CmdOperator, StdoutOperator, AppArgumentOperator, RunCommandOperator

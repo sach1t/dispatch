@@ -5,6 +5,41 @@ import stat
 from dispatch.plugins.apps import AppAction
 
 
+
+class RunCommandOperator(ActionOperator):
+    def __init__(self):
+        ActionOperator.__init__(self)
+        self.prompt = "run: "
+
+    def operates_on(self, action):
+        if action is None:
+            return (True, True)
+
+    def reload(self):
+        pass
+
+    def get_actions_for(self, action, query=""):
+        query = query.strip()
+        if query.startswith(self.prompt):
+            query = query.replace(self.prompt, "", 1)
+
+        act2 = CMDLineAction(
+            name = self.prompt + query,
+            description = "run command",
+            run = self._launch_application,
+            data = {"cmd": query},
+            icon = get_icon("utilities-terminal"),
+        )
+        return [act2]
+
+    def _launch_application(self, action):
+        subprocess.Popen(action.data["cmd"], shell=True)
+
+class CMDLineAction(Action):
+    def __init__(self, name, description, run, data=None, icon=None):
+        Action.__init__(self, name, description, run, data, icon)
+
+
 class AppWithArgsAction(Action):
     def __init__(self, name, description, run, data=None, icon=None):
         Action.__init__(self, name, description, run, data, icon)
