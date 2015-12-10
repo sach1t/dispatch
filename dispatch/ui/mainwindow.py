@@ -122,6 +122,8 @@ class MainWindow(Gtk.Window):
             current_row = self.listbox.get_selected_row()
             if current_row:
                 new_text = current_row.action.name
+                if len(new_text) > 10:
+                    new_text = new_text[:10] + "..."
                 entry_text = self.entry.get_text()
                 if "/" in entry_text:
                     new_text = entry_text[:entry_text.rindex('/')+1] + new_text
@@ -140,13 +142,18 @@ class MainWindow(Gtk.Window):
             current_text = entry_text[start_of_current:]
 
             if current_row.action.name != current_text:
-                self.entry.set_text(entry_text[:start_of_current]+current_row.action.name)
+                new_text = current_row.action.name
+                if len(new_text) > 10:
+                    new_text = new_text[:10] + "..."
+                self.entry.set_text(entry_text[:start_of_current]+new_text)
             else:
                 next_row_index = self._listbox_row_delta(self.listbox, +1)
                 next_row = self.listbox.get_row_at_index(next_row_index)
                 if next_row and hasattr(next_row, "action"):
                     self.listbox.select_row(next_row)
                     new_text = next_row.action.name
+                    if len(new_text) > 10:
+                        new_text = new_text[:10] + "..."
                     entry_text = self.entry.get_text()
                     if "/" in entry_text:
                         new_text = entry_text[:entry_text.rindex('/')+1] + new_text
@@ -160,6 +167,8 @@ class MainWindow(Gtk.Window):
             if next_row and hasattr(next_row, "action"):
                 self.listbox.select_row(next_row)
                 new_text = next_row.action.name
+                if len(new_text) > 10:
+                    new_text = new_text[:10] + "..."
                 entry_text = self.entry.get_text()
                 if "/" in entry_text:
                     new_text = entry_text[:entry_text.rindex('/')+1] + new_text
@@ -173,6 +182,8 @@ class MainWindow(Gtk.Window):
             if next_row and hasattr(next_row, "action"):
                 self.listbox.select_row(next_row)
                 new_text = next_row.action.name
+                if len(new_text) > 10:
+                    new_text = new_text[:10] + "..."
                 entry_text = self.entry.get_text()
                 if "/" in entry_text:
                     new_text = entry_text[:entry_text.rindex('/')+1] + new_text
