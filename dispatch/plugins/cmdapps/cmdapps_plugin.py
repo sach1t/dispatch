@@ -23,7 +23,7 @@ class RunCommandOperator(ActionOperator):
         if query.startswith(self.prompt):
             query = query.replace(self.prompt, "", 1)
 
-        act2 = CMDLineAction(
+        act2 = CmdAction(
             name = self.prompt + query,
             description = "run command",
             run = self._launch_application,
@@ -34,10 +34,6 @@ class RunCommandOperator(ActionOperator):
 
     def _launch_application(self, action):
         subprocess.Popen(action.data["cmd"], shell=True)
-
-class CMDLineAction(Action):
-    def __init__(self, name, description, run, data=None, icon=None):
-        Action.__init__(self, name, description, run, data, icon)
 
 
 class AppWithArgsAction(Action):
@@ -114,7 +110,7 @@ class StdoutOperator(ActionOperator):
             output = self._get_output(action)
             return [TextAction(
                 name = output,
-                description = "",
+                description = "output from command",
                 run = None,
                 data = {}
             )]
@@ -137,7 +133,7 @@ class StdoutOperator(ActionOperator):
             cmd += stdout_action.data["args"]   
         pipe = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
         try:
-            output = pipe.communicate(timeout=.5)[0].decode("utf-8").strip()
+            output = pipe.communicate(timeout=.250)[0].decode("utf-8").strip()
         except subprocess.TimeoutExpired:
             output = "Error: Process returned no output."
         return output
