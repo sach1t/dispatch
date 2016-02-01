@@ -48,8 +48,8 @@ class Searcher:
             matches.add(match)
 
         matches = list(matches)
-        if len(matches) <= 10:
-            matches = self.order_by_usage(matches)
+        matches = self.order_by_usage(matches)
+        matches = matches[:25]
 
         return matches + live_actions
 
