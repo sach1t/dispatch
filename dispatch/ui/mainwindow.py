@@ -131,6 +131,7 @@ class MainWindow(Gtk.Window):
                     new_text = entry_text[:entry_text.rindex('/')+1] + new_text
                 self.entry.set_text(new_text)
                 self.chain.append(current_row.action)
+                self.controller.add_heuristic_data(self._get_query(self.entry.get_text()), current_row.action)
             self.entry.set_position(len(self.entry.get_text()))
 
         elif event.keyval == Gdk.KEY_Tab and len(self.listbox.get_children()) > 0:
