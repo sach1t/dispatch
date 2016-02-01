@@ -202,10 +202,10 @@ class MainWindow(Gtk.Window):
             self.non_character_keypress = False
         else:
             text = widget.get_text()
-            start = time.time()
+            #start = time.time()
             matches = self.controller.search(self._get_query(text), self.chain[-1] if len(self.chain) > 0 else None)
-            end = time.time()
-            print("SEARCH: ", end-start)
+            #end = time.time()
+            #print("SEARCH: ", end-start)
             self._show_matches(matches)
 
     def _on_search_submit(self, widget):
@@ -250,18 +250,18 @@ class MainWindow(Gtk.Window):
             GObject.idle_add(self._show)
 
     def _show_matches(self, matches):
-        start=time.time()
+        #start=time.time()
         for child in self.listbox.get_children():
             child.destroy()
-        end=time.time()
-        print("DESTROY: ", end-start)
-        start=time.time()
+        #end=time.time()
+        #print("DESTROY: ", end-start)
+        #start=time.time()
         for match in matches:
             row = self.create_row(match)
             self.listbox.add(row)
         self.listbox.show_all()
-        end=time.time()
-        print("NEW ROWS: ", end-start)
+        #end=time.time()
+        #print("NEW ROWS: ", end-start)
         self.listbox.select_row(self.listbox.get_row_at_index(0))
 
 
