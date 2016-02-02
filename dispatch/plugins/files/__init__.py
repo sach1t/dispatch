@@ -1,1 +1,1 @@
-from .files_plugin import FileOperator, DirectoryPathOperator
+from .files_plugin import FileOperator, DirectoryPathOperator, FileActionOperator
