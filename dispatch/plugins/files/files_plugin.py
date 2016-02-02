@@ -7,10 +7,60 @@ class FileAction(Action):
     def __init__(self, name, description, run, data=None, icon=None):
         Action.__init__(self, name, description, run, data, icon)
 
-
 class DirectoryAction(Action):
     def __init__(self, name, description, run, data=None, icon=None):
         Action.__init__(self, name, description, run, data, icon)
+
+class DirectoryPathOperator(ActionOperator):
+    def __init__(self):
+        ActionOperator.__init__(self)
+
+    def operates_on(self, action):
+        if isinstance(action, DirectoryAction):
+            print("OPERATES ON IT")
+            return (True, False)
+        return (False, False)
+
+    def reload(self):
+        pass
+
+    def get_actions_for(self, action, query=""):
+        path = action.data["path"]
+        actions = []
+        for fname in os.listdir(path):
+            print(fname)
+            fpath = os.path.join(path, fname)
+            print(fpath)
+            if os.path.isfile(fpath):
+                print("cf")
+                act = FileAction(
+                    name = fname,
+                    description = "file:" + fpath,
+                    run = self._open,
+                    data = {"path": fpath},
+                    icon = get_icon("text-x-generic")
+                )
+                actions.append(act)
+            elif os.path.isdir(fpath):
+                print("cd")
+                act = DirectoryAction(
+                    name = fname,
+                    description = "dir:" + fpath,
+                    run = self._open,
+                    data = {"path": fpath},
+                    icon = get_icon("folder")
+                )
+                actions.append(act)
+        print(actions)
+        return actions
+
+    def _open(self, action):
+        if "path" in action.data:
+            cmd = ["xdg-open", action.data["path"]]
+            subprocess.Popen(cmd)
+            return []
+
+
 
 
 class FileOperator(ActionOperator):
@@ -55,7 +105,7 @@ class FileOperator(ActionOperator):
             elif os.path.isfile(curr) and not os.path.islink(curr):
                 action = FileAction(
                     name = curr_basename,
-                    description = "file:/" + curr,
+                    description = "file:" + curr,
                     run = self._open,
                     data = {"path": curr},
                     icon = get_icon("text-x-generic")
@@ -65,7 +115,7 @@ class FileOperator(ActionOperator):
             elif os.path.isdir(curr) and not os.path.islink(curr):
                 action = DirectoryAction(
                     name = curr_basename,
-                    description = "dir:/" + curr,
+                    description = "dir:" + curr,
                     run = self._open,
                     data = {"path": curr},
                     icon = get_icon("folder")
