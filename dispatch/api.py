@@ -20,9 +20,9 @@ class ActionOperator:
     description = "Some thing"
 
     def operates_on(self, action):
-        '''Return (X,Y)
-        X = operates on object?
-        Y = operates live on object? 
+        '''Return (operates_on, non_static)
+        operates_on = operates on the action?
+        non_static = returns non-static results for action
         The action should not be modified. '''
         if isinstance(action, Action):
             return (False, False)
@@ -34,11 +34,11 @@ class ActionOperator:
 
     def get_actions_for(self, action, query=""):
         '''Return list of actions.
-        if live = True current query will be given.
-        operates_on(obj) guarenteed to be true.
-        If you are live, it is your responsibility to make sure
-        that the actions returned match the query
-        The action should not be modified. '''
+        action is guarenteed to be of required type, as specified by operates_on function.
+        if non_static was specified as True when operates_on was called, the users current
+        query will be given, and this function should ensure that the actions returned match
+        the query as no filtering of the results will occur.
+        The the action should not be modified. '''
         return []
 
 
