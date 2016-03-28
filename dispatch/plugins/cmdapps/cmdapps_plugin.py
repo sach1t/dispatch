@@ -161,6 +161,8 @@ class CmdOperator(ActionOperator):
 
     def generate_actions(self, paths):
         for path in self.paths:
+            if (not os.path.exists(path)):
+                continue
             execs = self.find_executables(path)
             for filename in execs:
                 act = CmdAction(
