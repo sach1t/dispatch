@@ -1,36 +1,32 @@
-class TrieNode:
-    def __init__(self, suffix, parent):
-        '''Create node for Trie with given suffix and parent.'''
-        self.suffix = suffix
+class _TrieNode:
+    def __init__(self, prefix, parent):
+        self.prefix = prefix
         self.parent = parent
         self.children = {}
         self.data = []
 
     def __str__(self):
-        return self.suffix
+        return self.prefix
 
 
 class Trie:
     def __init__(self):
-        '''Create empty Trie.'''
-        self.root = TrieNode("", None)
+        self._root = _TrieNode("", None)
 
-    def insert(self, key, data):
-        '''Insert key with corresponding data.'''
-        node = self.root
-        for char in key:
+    def insert(self, prefix, data):
+        ''' Insert prefix with attached data'''
+        node = self._root
+        for char in prefix:
             if char in node.children:
                 node = node.children[char]
             else:
-                node.children[char] = TrieNode(node.suffix + char, node)
+                node.children[char] = _TrieNode(node.prefix + char, node)
                 node = node.children[char]
         node.data.append(data)
 
-    def find_matches(self, key):
-        '''Return data of all nodes with suffix equal to key'''
-        node = self.search(key)
-
-        # BFS - The shortest match is shown first
+    def find_matches(self, prefix):
+        '''Find matches for the given prefix'''
+        node = self._find_prefix_node(prefix)
         results = []
         if node is not None:
             stack = [node]
@@ -40,11 +36,11 @@ class Trie:
                 stack.extend(u.children.values())
         return results
 
-    def search(self, key):
-        '''Return node with suffix equal to given key.'''
-        node = self.root
+    def _find_prefix_node(self, prefix):
+        '''Find the node whose prefix is equal to the given prefix'''
+        node = self._root
         if node:
-            for char in key:
+            for char in prefix:
                 if char in node.children:
                     node = node.children[char]
                 else:

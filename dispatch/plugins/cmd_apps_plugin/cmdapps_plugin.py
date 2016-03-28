@@ -2,11 +2,27 @@ from dispatch.api import Action, ActionOperator, TextAction, get_icon
 import subprocess
 import os
 import stat
-from dispatch.plugins.apps import AppAction
+from dispatch.plugins.apps_plugin import AppAction
 
+
+class AppWithArgsAction(Action):
+    def __init__(self, name, description, run, data=None, icon=None):
+        Action.__init__(self, name, description, run, data, icon)
+
+
+class StdoutAction(Action):
+    def __init__(self, name, description, run, data=None, icon=None):
+        Action.__init__(self, name, description, run, data, icon, cacheable=False)
+
+
+class CmdAction(Action):
+    def __init__(self, name, description, run, data=None, icon=None):
+        Action.__init__(self, name, description, run, data, icon)
 
 
 class RunCommandOperator(ActionOperator):
+    '''Actions for running a custom command on the command line'''
+
     def __init__(self):
         ActionOperator.__init__(self)
         self.prompt = "run: "
@@ -15,6 +31,7 @@ class RunCommandOperator(ActionOperator):
         if action is None:
             return (True, True)
         return (False, False)
+
     def reload(self):
         pass
 
@@ -24,11 +41,11 @@ class RunCommandOperator(ActionOperator):
             query = query.replace(self.prompt, "", 1)
 
         act2 = CmdAction(
-            name = self.prompt + query,
-            description = "run command",
-            run = self._launch_application,
-            data = {"cmd": query},
-            icon = get_icon("utilities-terminal"),
+            name=self.prompt + query,
+            description="run command",
+            run=self._launch_application,
+            data={"cmd": query},
+            icon=get_icon("utilities-terminal"),
         )
         return [act2]
 
@@ -36,11 +53,11 @@ class RunCommandOperator(ActionOperator):
         subprocess.Popen(action.data["cmd"], shell=True)
 
 
-class AppWithArgsAction(Action):
-    def __init__(self, name, description, run, data=None, icon=None):
-        Action.__init__(self, name, description, run, data, icon)
-
 class AppArgumentOperator(ActionOperator):
+    '''Actions for running commands with arguments'''
+
+    TERMINAL = "xterm -e"
+
     def __init__(self):
         ActionOperator.__init__(self)
         self.prompt = "args: "
@@ -59,10 +76,10 @@ class AppArgumentOperator(ActionOperator):
             query = query.replace(self.prompt, "", 1)
 
         act2 = AppWithArgsAction(
-            name = self.prompt + query,
-            description = "run with arguments",
-            run = self._launch_application,
-            data = action.data.copy()
+            name=self.prompt + query,
+            description="run with arguments",
+            run=self._launch_application,
+            data=action.data.copy()
         )
         act2.data["args"] = query
         if isinstance(action, CmdAction):
@@ -74,7 +91,7 @@ class AppArgumentOperator(ActionOperator):
     def _launch_application(self, action):
         cmd = ""
         if "type" in action.data and action.data["type"] == "cmd":
-            cmd += "gnome-terminal -e "
+            cmd += AppArgumentOperator.TERMINAL + " "
         if "cmd" in action.data:
             cmd += action.data["cmd"]
         cmd += " "
@@ -83,25 +100,17 @@ class AppArgumentOperator(ActionOperator):
         subprocess.Popen(cmd, shell=True)
 
 
-class StdoutAction(Action):
-    def __init__(self, name, description, run, data=None, icon=None, cacheable=False):
-        Action.__init__(self, name, description, run, data, icon, cacheable)
-
-
-class CmdAction(Action):
-    def __init__(self, name, description, run, data=None, icon=None):
-        Action.__init__(self, name, description, run, data, icon)
-
-
 class StdoutOperator(ActionOperator):
+    '''Actions for piping output of program to a text action'''
+
     def __init__(self):
         ActionOperator.__init__(self)
 
     def operates_on(self, action):
         if isinstance(action, CmdAction) or \
-        isinstance(action, AppWithArgsAction) or \
-        isinstance(action, AppAction) or \
-        isinstance(action, StdoutAction):
+                isinstance(action, AppWithArgsAction) or \
+                isinstance(action, AppAction) or \
+                isinstance(action, StdoutAction):
             return (True, False)
         return (False, False)
 
@@ -109,17 +118,17 @@ class StdoutOperator(ActionOperator):
         if isinstance(action, StdoutAction):
             output = self._get_output(action)
             return [TextAction(
-                name = output,
-                description = "output from command",
-                run = None,
-                data = {}
+                name=output,
+                description="output from command",
+                run=None,
+                data={}
             )]
         else:
             return [StdoutAction(
-                name = "output",
-                description = "get output",
-                run = None,
-                data = action.data
+                name="output",
+                description="get output",
+                run=None,
+                data=action.data
             )]
 
     def reload(self):
@@ -130,7 +139,7 @@ class StdoutOperator(ActionOperator):
             cmd = stdout_action.data["cmd"]
         cmd += " "
         if "args" in stdout_action.data:
-            cmd += stdout_action.data["args"]   
+            cmd += stdout_action.data["args"]
         pipe = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
         try:
             output = pipe.communicate(timeout=.250)[0].decode("utf-8").strip()
@@ -140,6 +149,8 @@ class StdoutOperator(ActionOperator):
 
 
 class CmdOperator(ActionOperator):
+    '''Actions that represent command line utilities'''
+
     def __init__(self):
         ActionOperator.__init__(self)
         self.actions = []
@@ -155,7 +166,8 @@ class CmdOperator(ActionOperator):
         executables = []
         for filename in os.listdir(directory):
             path = directory + "/" + filename
-            if os.path.isfile(path) and self.is_executable(path) and not os.path.islink(path):
+            if os.path.isfile(path) and self.is_executable(path) \
+                    and not os.path.islink(path):
                 executables.append(filename)
         return executables
 
@@ -166,11 +178,11 @@ class CmdOperator(ActionOperator):
             execs = self.find_executables(path)
             for filename in execs:
                 act = CmdAction(
-                    name = filename,
-                    description = "command line application",
-                    run = self._open,
-                    data = {"cmd":  filename},
-                    icon = get_icon("utilities-terminal"),
+                    name=filename,
+                    description="command line application",
+                    run=self._open,
+                    data={"cmd":  filename},
+                    icon=get_icon("utilities-terminal"),
                 )
                 self.actions.append(act)
 

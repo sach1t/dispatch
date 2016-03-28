@@ -8,7 +8,7 @@ GtkListBox {
 
 GtkListBoxRow {
     color: #333;
-    font-family: OpenSans;
+    /* font-family: OpenSans; */
     font-weight: 500;
     padding-left:5px;
 }
@@ -31,7 +31,7 @@ GtkListBoxRow GtkLabel:last-child {
     background-color: white;
     color: #555555;
     font-size:16px;
-    font-family: OpenSans;
+    /* font-family: OpenSans; */
     font-weight: 400;
     padding: 5px;
 }

@@ -1,11 +1,10 @@
-from gi.repository import Gtk, Gdk, GObject, GdkPixbuf
+from gi.repository import Gtk, Gdk, GObject
 from keybinder.keybinder_gtk import KeybinderGtk
 import os
-import time
+# import time
 
 
 class MainWindow(Gtk.Window):
-
     DEFAULT_CSS = os.path.join(os.path.dirname(__file__), "style.css")
     TRIGGER = "<Ctrl>space"
     ICONS = True
@@ -89,8 +88,8 @@ class MainWindow(Gtk.Window):
         self.connect("focus-out-event", self._on_lost_focus)
         self.connect("key-release-event", self._on_key_release)
 
-        self.entry.connect("key-press-event", self._on_search_key) # key press
-        self.entry.connect("changed", self._on_search_changed) # before change
+        self.entry.connect("key-press-event", self._on_search_key)  # key press
+        self.entry.connect("changed", self._on_search_changed)  # before change
         self.entry.connect("activate", self._on_search_submit)
         self.entry.connect("delete-text", self._on_delete)
 
@@ -119,52 +118,49 @@ class MainWindow(Gtk.Window):
             self.chain = self.chain[:total_contexts-del_contexts]
 
     def _on_search_key(self, widget, event):
-        if event.keyval == Gdk.KEY_slash:    
-            self.non_character_keypress = False     
-            current_row = self.listbox.get_selected_row()
-            if current_row:
-                new_text = current_row.action.name
-                if len(new_text) > 20:
-                    new_text = new_text[:20] + "..."
-                entry_text = self.entry.get_text()
-                if "/" in entry_text:
-                    new_text = entry_text[:entry_text.rindex('/')+1] + new_text
-                self.entry.set_text(new_text)
-                self.chain.append(current_row.action)
-                self.controller.add_heuristic_data(self._get_query(self.entry.get_text()), current_row.action)
-            self.entry.set_position(len(self.entry.get_text()))
+        if event.keyval == Gdk.KEY_slash:
+            self._slash_key()
+        elif len(self.listbox.get_children()) > 0:
+            if event.keyval == Gdk.KEY_Tab:
+                self._tab_key()
+            elif event.keyval == Gdk.KEY_Down:
+                self._arrow_key(+1)
+            elif event.keyval == Gdk.KEY_Up:
+                self._arrow_key(-1)
 
-        elif event.keyval == Gdk.KEY_Tab and len(self.listbox.get_children()) > 0:
-            self.non_character_keypress = True
-            self.non_delete_update = True
-            current_row = self.listbox.get_selected_row()
+    def _slash_key(self):
+        self.non_character_keypress = False
+        current_row = self.listbox.get_selected_row()
+        if current_row:
+            new_text = current_row.action.name
+            if len(new_text) > 20:
+                new_text = new_text[:20] + "..."
             entry_text = self.entry.get_text()
-            start_of_current = 0
             if "/" in entry_text:
-                start_of_current = entry_text.rindex('/')+1
-            current_text = entry_text[start_of_current:]
+                new_text = entry_text[:entry_text.rindex('/')+1] + new_text
+            self.entry.set_text(new_text)
+            self.chain.append(current_row.action)
+            self.controller.add_heuristic_data(
+                self._get_query(self.entry.get_text()),
+                current_row.action
+            )
+        self.entry.set_position(len(self.entry.get_text()))
 
-            if current_row.action.name != current_text:
-                new_text = current_row.action.name
-                if len(new_text) > 20:
-                    new_text = new_text[:20] + "..."
-                self.entry.set_text(entry_text[:start_of_current]+new_text)
-            else:
-                next_row_index = self._listbox_row_delta(self.listbox, +1)
-                next_row = self.listbox.get_row_at_index(next_row_index)
-                if next_row and hasattr(next_row, "action"):
-                    self.listbox.select_row(next_row)
-                    new_text = next_row.action.name
-                    if len(new_text) > 20:
-                        new_text = new_text[:20] + "..."
-                    entry_text = self.entry.get_text()
-                    if "/" in entry_text:
-                        new_text = entry_text[:entry_text.rindex('/')+1] + new_text
-                    self.entry.set_text(new_text)
-                    self.entry.grab_focus() #want sideeffect of selecting all text
-        elif event.keyval == Gdk.KEY_Down and len(self.listbox.get_children()) > 0:
-            self.non_character_keypress = True
-            self.non_delete_update = True
+    def _tab_key(self):
+        self.non_character_keypress = True
+        self.non_delete_update = True
+        current_row = self.listbox.get_selected_row()
+        entry_text = self.entry.get_text()
+        start_of_current = 0
+        if "/" in entry_text:
+            start_of_current = entry_text.rindex('/')+1
+        current_text = entry_text[start_of_current:]
+        if current_row.action.name != current_text:
+            new_text = current_row.action.name
+            if len(new_text) > 20:
+                new_text = new_text[:20] + "..."
+            self.entry.set_text(entry_text[:start_of_current]+new_text)
+        else:
             next_row_index = self._listbox_row_delta(self.listbox, +1)
             next_row = self.listbox.get_row_at_index(next_row_index)
             if next_row and hasattr(next_row, "action"):
@@ -177,43 +173,44 @@ class MainWindow(Gtk.Window):
                     new_text = entry_text[:entry_text.rindex('/')+1] + new_text
                 self.entry.set_text(new_text)
                 self.entry.grab_focus()
-        elif event.keyval == Gdk.KEY_Up and len(self.listbox.get_children()) > 0:
-            self.non_character_keypress = True
-            self.non_delete_update = True
-            next_row_index = self._listbox_row_delta(self.listbox, -1)
-            next_row = self.listbox.get_row_at_index(next_row_index)
-            if next_row and hasattr(next_row, "action"):
-                self.listbox.select_row(next_row)
-                new_text = next_row.action.name
-                if len(new_text) > 20:
-                    new_text = new_text[:20] + "..."
-                entry_text = self.entry.get_text()
-                if "/" in entry_text:
-                    new_text = entry_text[:entry_text.rindex('/')+1] + new_text
-                self.entry.set_text(new_text)
-                self.entry.grab_focus()
+
+    def _arrow_key(self, delta):
+        self.non_character_keypress = True
+        self.non_delete_update = True
+        next_row_index = self._listbox_row_delta(self.listbox, delta)
+        next_row = self.listbox.get_row_at_index(next_row_index)
+        if next_row and hasattr(next_row, "action"):
+            self.listbox.select_row(next_row)
+            new_text = next_row.action.name
+            if len(new_text) > 20:
+                new_text = new_text[:20] + "..."
+            entry_text = self.entry.get_text()
+            if "/" in entry_text:
+                new_text = entry_text[:entry_text.rindex('/')+1] + new_text
+            self.entry.set_text(new_text)
+            self.entry.grab_focus()
 
     def _get_query(self, full_query):
         if "/" in full_query:
             full_query = full_query[full_query.rindex("/"):]
-        return full_query 
+        return full_query
 
     def _on_search_changed(self, widget):
         if self.non_character_keypress:
             self.non_character_keypress = False
         else:
             text = widget.get_text()
-            #start = time.time()
+            # start = time.time()
             matches = self.controller.search(self._get_query(text), self.chain[-1] if len(self.chain) > 0 else None)
-            #end = time.time()
-            #print("SEARCH: ", end-start)
+            # end = time.time()
+            # print("SEARCH: ", end-start)
             self._show_matches(matches)
 
     def _on_search_submit(self, widget):
-        row = self.listbox.get_selected_row()   
+        row = self.listbox.get_selected_row()
         if row:
             self._run_action(self.listbox, row)
-            
+
         self.entry.grab_focus()
 
     def _on_quit(self,  *args):
@@ -235,10 +232,6 @@ class MainWindow(Gtk.Window):
             self.controller.reload_plugins()
 
     def _show(self):
-        # self.resize(
-        #     self.get_screen().get_width()*.20,
-        #     self.get_screen().get_height()
-        # )
         self.move(0, 0)
         self.show()
         self.entry.grab_focus()
@@ -251,20 +244,19 @@ class MainWindow(Gtk.Window):
             GObject.idle_add(self._show)
 
     def _show_matches(self, matches):
-        #start=time.time()
+        # start=time.time()
         for child in self.listbox.get_children():
             child.destroy()
-        #end=time.time()
-        #print("DESTROY: ", end-start)
-        #start=time.time()
+        # end=time.time()
+        # print("DESTROY: ", end-start)
+        # start=time.time()
         for match in matches:
             row = self.create_row(match)
             self.listbox.add(row)
         self.listbox.show_all()
-        #end=time.time()
-        #print("NEW ROWS: ", end-start)
+        # end=time.time()
+        # print("NEW ROWS: ", end-start)
         self.listbox.select_row(self.listbox.get_row_at_index(0))
-
 
     def create_row(self, action):
         row = Gtk.ListBoxRow()
@@ -291,6 +283,9 @@ class MainWindow(Gtk.Window):
 
     def _run_action(self, listbox, listrow):
         can_run = self.controller.run_action(listrow.action)
-        self.controller.add_heuristic_data(self._get_query(self.entry.get_text()), listrow.action)
+        self.controller.add_heuristic_data(
+            self._get_query(self.entry.get_text()),
+            listrow.action
+        )
         if can_run:
             self.toggle_visibility()
