@@ -6,7 +6,7 @@ import time
 
 class MainWindow(Gtk.Window):
 
-    DEFAULT_CSS = "~/launcher/dispatch/dispatch/ui/style.css"
+    DEFAULT_CSS = os.path.join(os.path.dirname(__file__), "style.css")
     TRIGGER = "<Ctrl>space"
     ICONS = True
 
