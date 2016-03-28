@@ -1,0 +1,11 @@
+Issues
+----------------------------------
+- Plugins system is a bit messy
+	- Actions, and operators can get messy
+- Better heuristic opposed to most used?
+- Passing arguments works but it is hack around live queries 
+	- well this isn't a command line anyway so maybe okay
+- Plugins can halt the show
+- don't reload everything for small updates to data
+- More customization
+- more user friendly
