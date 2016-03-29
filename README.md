@@ -9,7 +9,7 @@ It was created because I could not find a launcher that would index all of my fi
 Features
 -------------------------
 - Indexes applications (including command line applications) and files and directories in your home directory
-- Opens on the left of the screen, so that it can stay out of your way
+- Opens on the left of the screen, so that it can stay out of your way... opposed to opening front and center.
 - Actions can be preformed on matches (which are themselves actions). To see the possible actions that can be preformed on a match type `/` when selecting a match
 - Supports navigating directories
 - Most used matches come to the top, so that you can later just type something and press enter without looking
