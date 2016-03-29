@@ -34,6 +34,7 @@ Usage
 - `enter` on a match opens it (eg. opens that application, file or directory)
 - `/` on a match shows actions that can be preformed on that match (e.g. `/` on a directory match shows files in that directory)
 - `F6` re-indexes everything
+- `tab`, `up`, `down` to cycle through results
 
 
 Stuff that doesn't work yet
