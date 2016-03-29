@@ -8,7 +8,7 @@ It was created because I could not find a launcher that would index all of my fi
 
 Screenshot
 ------------------------
-![Screenshot, query chr](screenshot.png)
+![Screenshot of query chr](https://github.com/sach1t/dispatch/blob/master/documentation/screenshot.png)
 
 Features
 -------------------------
