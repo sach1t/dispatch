@@ -6,6 +6,10 @@ It is still **a work in progress** but should be mostly usable at this point.
 
 It was created because I could not find a launcher that would index all of my files without slowing down... but it does a little more than just fix that.
 
+Screenshot
+------------------------
+![Screenshot, query chr](screenshot.png)
+
 Features
 -------------------------
 - Indexes applications (including command line applications) and files and directories in your home directory
