@@ -10,7 +10,7 @@ import os
 
 def main():
     searcher = Searcher()
-    print("Start Loading plugins")
+    print("Loading plugins")
     plugin_manager = PluginManager()
     print("Finished loading plugins")
     controller = Controller(plugin_manager, searcher)
