@@ -1,5 +1,4 @@
-from gi.repository import Gtk, Gdk, GObject
-from keybinder.keybinder_gtk import KeybinderGtk
+from gi.repository import Gtk, Gdk, GObject, Keybinder
 import os
 # import time
 
@@ -22,6 +21,8 @@ class MainWindow(Gtk.Window):
         self.non_character_keypress = False
         self.chain = []
         self.non_delete_update = False
+        # window incorrectly reports non visible when visible but not in focus
+        self.visible = self.is_visible() 
 
     def _set_window_properties(self):
         self.set_decorated(False)
@@ -96,9 +97,8 @@ class MainWindow(Gtk.Window):
         self.listbox.connect("row-activated", self._run_action)
 
     def _register_key_bindings(self):
-        self.keybinder = KeybinderGtk()
-        self.keybinder.register(MainWindow.TRIGGER, self.toggle_visibility)
-        self.keybinder.start()
+        Keybinder.init()
+        Keybinder.bind(MainWindow.TRIGGER, self.toggle_visibility)
 
     def _listbox_row_delta(self, listbox, delta):
         picked_row_index = listbox.get_selected_row().get_index()
@@ -214,7 +214,7 @@ class MainWindow(Gtk.Window):
         self.entry.grab_focus()
 
     def _on_quit(self,  *args):
-        self.keybinder.stop()
+        pass
 
     def _on_lost_focus(self, widget, event):
         self.hide()
@@ -237,11 +237,12 @@ class MainWindow(Gtk.Window):
         self.entry.grab_focus()
         return False
 
-    def toggle_visibility(self):
-        if self.is_visible():
+    def toggle_visibility(self, keystr=None, data=None):
+        if self.visible:
             self.hide()
         else:
-            GObject.idle_add(self._show)
+            self._show()
+        self.visible = not self.visible
 
     def _show_matches(self, matches):
         # start=time.time()
