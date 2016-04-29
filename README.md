@@ -40,10 +40,9 @@ Usage
 Stuff that doesn't work yet
 -------------------------------------
 - Indexes should be updated automatically without having to press `F6`
-- Loading data from plugins and populating the cache should be done asynchronously
+- Loading data from plugins and populating the cache should be done in the background
 	- currently this results in an initial lag
 - Memory usage should be decreased
-
 
 Plugins
 -------------------------
